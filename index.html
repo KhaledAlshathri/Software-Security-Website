@@ -57,20 +57,21 @@
   <section id="home" class="interface pt-5">
     <div class="container px-4 py-5 mt-5">
       <div class="row align-items-center interface1">
-        <div class="col-12 col-md-6 text-center text-md-start">
+        <div class="col-12 col-md-6 order-1 order-md-2 text-center">
+          <img src="assets/images/monitor.gif" class="img-fluid interface-pic" alt="Monitor" loading="lazy">
+        </div>
+        <div class="col-12 col-md-6 order-2 order-md-1 text-center text-md-start">
           <h1 class="fw-bold lh-1 mb-3">Cryption Hub</h1>
           <p class="lead">Your one-stop solution for encryption and decryption. Secure your messages with our variety of
             encryption methods and keep your communication private.</p>
           <a href="#encryption" class="btn btn-custom mt-3"><i class="fas fa-lock"></i> Get Started</a>
         </div>
-        <div class="col-12 col-md-6 text-center">
-          <img src="assets/images/monitor.gif" class="img-fluid interface-pic" alt="Monitor" loading="lazy">
-        </div>
       </div>
     </div>
   </section>
+  
 
-  <!-- Encryption Section -->
+  <!-- ================== Encryption Section ================== -->
   <section id="encryption" class="encryption-section py-5">
     <div class="container">
       <div class="text-center mb-5">
@@ -124,7 +125,7 @@
     </div>
   </section>
 
-  <!-- Decryption Section -->
+  <!-- ================== Decryption Section ================== -->
   <section id="decryption" class="decryption-section py-5">
     <div class="container">
       <div class="text-center mb-5">
@@ -132,7 +133,12 @@
         <p class="lead">Select a decryption method and input your text to decrypt.</p>
       </div>
       <div class="row align-items-center mb-5">
-        <div class="col-md-6 text-center text-md-start">
+        <!-- ~~~~~~~~~~~~~ Image Column ~~~~~~~~~~~~~ -->
+        <div class="col-md-6 order-1 order-md-2 text-center">
+          <img class="img-fluid" src="./assets/images/Decryption.png" alt="Decryption">
+        </div>
+        <!-- ~~~~~~~~~~~~~ Content Column ~~~~~~~~~~~~~ -->
+        <div class="col-md-6 order-2 order-md-1 text-center text-md-start">
           <div>
             <div class="mb-3">
               <select name="decryption_methods" id="decryption_methods" class="form-select select-method"
@@ -170,9 +176,6 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 text-center">
-          <img class="img-fluid" src="./assets/images/Decryption.png" alt="Decryption">
-        </div>
       </div>
     </div>
   </section>
@@ -190,42 +193,102 @@
         <div class="col-md-6">
           <div class="row g-3">
             <!-- ~~~~~~~~~~~~~ Member 1 ~~~~~~~~~~~~~ -->
-            <div class="col-12">
-              <div class="card h-100 text-center">
-                <div class="card-body">
-                  <h5 class="card-title">Khaled Alshathri</h5>
+            <div class="">
+              <div class="card h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-0">Khaled Alshathri</h5>
+                  <ul class="list-unstyled d-flex mb-0">
+                    <li class="ms-3">
+                      <a href="https://www.linkedin.com/in/khaled-alshathri?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app">
+                        <img src="./assets/images/linkedin logo.png" alt="Linkedin logo" height="30px">
+                      </a>
+                    </li>
+                    <li class="ms-3">
+                      <a href="https://x.com/khaled1salah">
+                        <img src="./assets/images/X logo.png" alt="X logo" height="30px">
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
             <!-- ~~~~~~~~~~~~~ Member 2 ~~~~~~~~~~~~~ -->
-            <div class="col-12">
-              <div class="card h-100 text-center">
-                <div class="card-body">
-                  <h5 class="card-title">Abdullah Al-Muadi</h5>
+            <div class="">
+              <div class="card h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-0">Abdullah Al-Muadi</h5>
+                  <ul class="list-unstyled d-flex mb-0">
+                    <li class="ms-3">
+                      <a href="mailto:khaled_sh3@hotmail.com">
+                        <img src="./assets/images/linkedin logo.png" alt="Linkedin logo" height="30px">
+                      </a>
+                    </li>
+                    <li class="ms-3">
+                      <a href="https://x.com/khaled1salah">
+                        <img src="./assets/images/X logo.png" alt="X logo" height="30px">
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
             <!-- ~~~~~~~~~~~~~ Member 3 ~~~~~~~~~~~~~ -->
-            <div class="col-12">
-              <div class="card h-100 text-center">
-                <div class="card-body">
-                  <h5 class="card-title">Meshal Alsaqabi</h5>
+            <div class="">
+              <div class="card h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-0">Meshal Alsaqabi</h5>
+                  <ul class="list-unstyled d-flex mb-0">
+                    <li class="ms-3">
+                      <a href="mailto:khaled_sh3@hotmail.com">
+                        <img src="./assets/images/linkedin logo.png" alt="Linkedin logo" height="30px">
+                      </a>
+                    </li>
+                    <li class="ms-3">
+                      <a href="https://x.com/khaled1salah">
+                        <img src="./assets/images/X logo.png" alt="X logo" height="30px">
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
             <!-- ~~~~~~~~~~~~~ Member 4 ~~~~~~~~~~~~~ -->
-            <div class="col-12">
-              <div class="card h-100 text-center">
-                <div class="card-body">
-                  <h5 class="card-title">Abdulkarim Jan</h5>
+            <div class="">
+              <div class="card h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-0">Abdulkarim Jan</h5>
+                  <ul class="list-unstyled d-flex mb-0">
+                    <li class="ms-3">
+                      <a href="mailto:khaled_sh3@hotmail.com">
+                        <img src="./assets/images/linkedin logo.png" alt="Linkedin logo" height="30px">
+                      </a>
+                    </li>
+                    <li class="ms-3">
+                      <a href="https://x.com/khaled1salah">
+                        <img src="./assets/images/X logo.png" alt="X logo" height="30px">
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
             <!-- ~~~~~~~~~~~~~ Member 5 ~~~~~~~~~~~~~ -->
-            <div class="col-12">
-              <div class="card h-100 text-center">
-                <div class="card-body">
-                  <h5 class="card-title">Basel Alghamdi</h5>
+            <div class="">
+              <div class="card h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-0">Basel Alghamdi</h5>
+                  <ul class="list-unstyled d-flex mb-0">
+                    <li class="ms-3">
+                      <a href="mailto:khaled_sh3@hotmail.com">
+                        <img src="./assets/images/linkedin logo.png" alt="Linkedin logo" height="30px">
+                      </a>
+                    </li>
+                    <li class="ms-3">
+                      <a href="https://x.com/khaled1salah">
+                        <img src="./assets/images/X logo.png" alt="X logo" height="30px">
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>

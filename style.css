@@ -121,12 +121,18 @@ body {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 80px;
+}
+
+.card-body{
+    height: 80px;
 }
 
 .card-title {
     color: #011e4b;
     font-weight: 600;
-    margin-top: 15px;
+    display: flex;
+    justify-content: baseline;
 }
 
 /* ================== Footer Styles ================== */
