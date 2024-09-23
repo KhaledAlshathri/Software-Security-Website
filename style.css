@@ -5,15 +5,21 @@ body {
 
 header{
     background-color: #172a46;
-    max-width: 84%;
+    position: fixed;
+    width: 84%;
     justify-content: center !important;
     display: flex;
     margin-left: 8%;
     border-radius: 0px 0px 15px 15px;
-
     
 }
+
 h1 {
+    color: #011e4b;
+    font-size: 4rem;
+}
+
+h2{
     color: #011e4b;
 }
 
@@ -23,17 +29,70 @@ h1 {
 
 
 
-@media (min-width: 1200px) and (max-width: 1500px) {
+
+
+@media (max-width: 1500px) and (min-width: 1200px){
 
 }
 
-@media (min-width: 1001px) and (max-width: 1199px) {
+@media (max-width: 1199px) and (min-width: 1001px){
+
+    .nav-link{
+        font-size: 1.6vw;
+    }
 
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1000px) and (min-width: 800px) {
+
+    h1 {
+        font-size: 3rem;
+    }
+
     .nav-link {
         font-size: 1.8vw;
+    }
+
+    .lead{
+        font-size: 1.2rem;
+    }
+
+    .interface1{
+        margin-top: 50px;
+    }
+}
+
+@media (max-width: 800px) and (min-width: 600px){
+
+    h1{
+        font-size: 3rem;
+    }
+    .nav-link {
+        font-size: 2.2vw;
+    }
+
+    .interface-pic{
+        margin-top: 10%;
+    }
+    
+}
+
+@media  (max-width: 600px) {
+
+    h1{
+        font-size: 2.7rem;
+    }
+
+    .nav-link {
+        font-size: 2.5vw;
+    }
+
+    .lead{
+        font-size: 1rem;
+    }
+
+    .interface-pic{
+        margin-top: 10%;
     }
 }
 
