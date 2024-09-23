@@ -15,11 +15,37 @@ header{
 }
 h1 {
     color: #011e4b;
+}
 
+.nav-link{
+    font-size: 1.20vw;
 }
 
 
 
-@media (max-width: 1000px){
+@media (max-width: 1500px) and (min-width: 1200px) {
 
 }
+
+@media (max-width: 1199px) and (min-width: 1001px) {
+
+}
+
+@media (max-width: 1000px) and (min-width: 800px){
+
+    .nav-link{
+        font-size: 1.5vw;
+    }
+}
+
+@media (max-width: 800px) {
+    .nav-link {
+        font-size: 5vw;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+}
+
