@@ -23,29 +23,17 @@ h1 {
 
 
 
-@media (max-width: 1500px) and (min-width: 1200px) {
+@media (min-width: 1200px) and (max-width: 1500px) {
 
 }
 
-@media (max-width: 1199px) and (min-width: 1001px) {
+@media (min-width: 1001px) and (max-width: 1199px) {
 
 }
 
-@media (max-width: 1000px) and (min-width: 800px){
-
-    .nav-link{
-        font-size: 1.5vw;
-    }
-}
-
-@media (max-width: 800px) {
+@media (max-width: 1000px) {
     .nav-link {
-        font-size: 5vw;
+        font-size: 1.8vw;
     }
-}
-
-
-@media (max-width: 600px) {
-
 }
 
