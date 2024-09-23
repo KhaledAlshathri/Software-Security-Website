@@ -1,0 +1,25 @@
+body {
+    background: rgb(255,255,255);
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(195,214,255,1) 42%, rgba(135,172,255,1) 100%);
+}
+
+header{
+    background-color: #172a46;
+    max-width: 84%;
+    justify-content: center !important;
+    display: flex;
+    margin-left: 8%;
+    border-radius: 0px 0px 15px 15px;
+
+    
+}
+h1 {
+    color: #011e4b;
+
+}
+
+
+
+@media (max-width: 1000px){
+
+}
