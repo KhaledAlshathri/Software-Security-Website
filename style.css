@@ -1,98 +1,140 @@
+/* ================== Body Styles ================== */
 body {
-    background: rgb(255,255,255);
+    font-family: 'Roboto', sans-serif;
+    scroll-behavior: smooth;
+}
+
+/* ================== Navbar Styles ================== */
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-size: 1rem;
+    position: relative;
+    color: #fff !important;
+    transition: color 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #1abc9c !important;
+}
+
+.nav-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #1abc9c;
+    transition: width .3s;
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+    width: 100%;
+}
+
+/* ~~~~~ Custom Button Styles ~~~~~ */
+.btn-custom {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+}
+
+.btn-custom:hover {
+    background-color: #17a589;
+    color: white;
+}
+
+/* ================== Interface Section ================== */
+.interface {
     background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(195,214,255,1) 42%, rgba(135,172,255,1) 100%);
+    padding-top: 80px;
 }
 
-header{
+.interface h1 {
+    color: #011e4b;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 3rem;
+}
+
+.interface p {
+    color: #555;
+}
+
+/* ~~~~~ Section Styles ~~~~~ */
+.encryption-section, .team-section {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.encryption-section h2, .decryption-section h2, .team-section h2 {
+    color: #011e4b;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.decryption-section {
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(195,214,255,1) 42%, rgba(135,172,255,1) 100%);
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.lead {
+    color: #555;
+}
+
+/* ~~~~~ Explanation Field Styles ~~~~~ */
+.explanation {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-left: 5px solid #1abc9c;
+    border-radius: 5px;
+    animation: fadeIn 0.5s;
+    min-height: 250px;
+}
+
+/* ~~~~~ Output Textarea Styles ~~~~~ */
+.output-textarea {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    user-select: none;
+}
+
+/* ================== Footer Styles ================== */
+footer {
     background-color: #172a46;
-    position: fixed;
-    width: 84%;
-    justify-content: center !important;
-    display: flex;
-    margin-left: 8%;
-    border-radius: 0px 0px 15px 15px;
-    
 }
 
-h1 {
-    color: #011e4b;
-    font-size: 3.7rem;
+footer p, footer a {
+    color: #fff;
 }
 
-h2{
-    color: #011e4b;
+.social-icons a {
+    font-size: 1.2rem;
+    transition: color 0.3s;
 }
 
-.nav-link{
-    font-size: 1.20vw;
+.social-icons a:hover {
+    color: #1abc9c;
 }
 
-
-
-
-
-@media (max-width: 1500px) and (min-width: 1200px){
-
-}
-
-@media (max-width: 1199px) and (min-width: 1001px){
-
-    .nav-link{
-        font-size: 1.6vw;
-    }
-
-}
-
-@media (max-width: 1000px) and (min-width: 800px) {
-
-    h1 {
-        font-size: 3rem;
-    }
-
-    .nav-link {
-        font-size: 1.8vw;
-    }
-
-    .lead{
-        font-size: 1.2rem;
-    }
-
-    .interface1{
-        margin-top: 50px;
+/* ================== Responsive Adjustments ================== */
+@media (max-width: 992px) {
+    .navbar-nav .nav-link {
+        font-size: 1.25rem;
     }
 }
 
-@media (max-width: 800px) and (min-width: 600px){
-
-    h1{
-        font-size: 3rem;
-    }
-    .nav-link {
-        font-size: 2.2vw;
+@media (max-width: 767px) {
+    .interface h1 {
+        font-size: 2.5rem;
     }
 
-    .interface-pic{
-        margin-top: 10%;
-    }
-    
-}
-
-@media  (max-width: 600px) {
-
-    h1{
-        font-size: 2.7rem;
-    }
-
-    .nav-link {
-        font-size: 2.5vw;
-    }
-
-    .lead{
-        font-size: 1rem;
-    }
-
-    .interface-pic{
-        margin-top: 10%;
+    .navbar-brand {
+        font-size: 1.25rem;
     }
 }
-
