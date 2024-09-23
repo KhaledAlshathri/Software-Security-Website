@@ -35,9 +35,9 @@ body {
     width: 100%;
 }
 
-/* ~~~~~ Custom Button Styles ~~~~~ */
+/* ~~~~~~~~~~~~~ Custom Button Styles ~~~~~~~~~~~~~ */
 .btn-custom {
-    background-color: #1abc9c;
+    background-color: #212529;
     color: white;
     border: none;
 }
@@ -64,7 +64,7 @@ body {
     color: #555;
 }
 
-/* ~~~~~ Section Styles ~~~~~ */
+/* ~~~~~~~~~~~~~ Section Styles ~~~~~~~~~~~~~ */
 .encryption-section, .team-section {
     padding-top: 60px;
     padding-bottom: 60px;
@@ -86,7 +86,7 @@ body {
     color: #555;
 }
 
-/* ~~~~~ Explanation Field Styles ~~~~~ */
+/* ~~~~~~~~~~~~~ Explanation Field Styles ~~~~~~~~~~~~~ */
 .explanation {
     margin-top: 20px;
     padding: 20px;
@@ -97,11 +97,36 @@ body {
     min-height: 250px;
 }
 
-/* ~~~~~ Output Textarea Styles ~~~~~ */
+/* ~~~~~~~~~~~~~ Fade In Animation ~~~~~~~~~~~~~ */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+/* ~~~~~~~~~~~~~ Output Textarea Styles ~~~~~~~~~~~~~ */
 .output-textarea {
     background-color: #e9ecef;
     cursor: not-allowed;
     user-select: none;
+}
+
+/* ================== Card Styles for Team Members ================== */
+.card {
+    background: linear-gradient(90deg, rgba(255,255,255,1) 30%, rgba(195,214,255,1) 100%, rgba(135,172,255,1) 100%);
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    color: #011e4b;
+    font-weight: 600;
+    margin-top: 15px;
 }
 
 /* ================== Footer Styles ================== */
@@ -124,6 +149,10 @@ footer p, footer a {
 
 /* ================== Responsive Adjustments ================== */
 @media (max-width: 992px) {
+
+    h1{
+        font-size: 2.5rem !important;
+    }
     .navbar-nav .nav-link {
         font-size: 1.25rem;
     }
@@ -134,7 +163,7 @@ footer p, footer a {
         font-size: 2.5rem;
     }
 
-    .navbar-brand {
+    .navbar-brand{
         font-size: 1.25rem;
     }
 }
