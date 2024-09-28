@@ -1,3 +1,15 @@
+//-------------------------------->exporting all the methods to index.js<-----------------------------------
+const {
+    keyedTranspositionCipher,
+    monoAlphabeticalEncryption,
+    monoAlphabeticalDecryption,
+    generatePlayfairMatrix,
+    findPosition,
+    playfairEncrypt,
+    playfairDecrypt
+} = require('enc_dec_Methods.js');
+
+
 (function() {
     /* ~~~~~~~~~~~~~ Smooth Scrolling for Navbar Links ~~~~~~~~~~~~~ */
     const navLinks = document.querySelectorAll('.nav-link');
