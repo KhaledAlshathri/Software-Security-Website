@@ -1,6 +1,6 @@
 // -------------------------------------->keyedTranspositionCipher<---------------------------------
 //--------------------------------------->key = 13254<---------------------------------------------
-function keyedTranspositionCipher(key, plainText) {
+function keyedTranspositionCipher(plainText, key) {
     const keyLength = key.toString().length;
     plainText = plainText.toUpperCase();
 
@@ -38,11 +38,11 @@ function keyedTranspositionCipher(key, plainText) {
 // const key = 13254;
 // const plainText = "Salma";
 
-// const cipherText = keyedTranspositionCipher(key, plainText);
+// const cipherText = keyedTranspositionCipher(plainText, key);
 // console.log(`Cipher text: ${cipherText}`);
 //------------------------------------------> monoAlphabetical Encryption <--------------------------------------
 //------------------------------------------>key = 3<--------------------------------------
-function monoAlphabeticalEncryption(plainText, key) {
+ function monoAlphabeticalEncryption(plainText, key) {
     const letters = [];
     for (let i = 65; i <= 90; i++) {
         letters.push(String.fromCharCode(i));  // Generates a list of characters from 'A' to 'Z'
@@ -227,19 +227,4 @@ function playfairDecrypt(cipherText, key) {
 // console.log("Encrypted text:", cipherText);
 // console.log("Decrypted text:", decryptedText);
 
-
-
-
-
-//---------------------------->exporting all the methods to index.js<------------------------
-//------------------------------->DES and vignere should be added also<----------------------
-// Export all functions
-module.exports = {
-    keyedTranspositionCipher,
-    monoAlphabeticalEncryption,
-    monoAlphabeticalDecryption,
-    generatePlayfairMatrix,
-    findPosition,
-    playfairEncrypt,
-    playfairDecrypt
-};
+//------------------------------->DES and vignere Methods should be added also<----------------------
