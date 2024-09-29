@@ -101,7 +101,7 @@ function monoAlphabeticalDecryption(plainText, key) {
 
 
 //------------------------->Playfair enc/dec<-----------------------------
-//------------------------------->key = SWE<------------------
+//------------------------------->key = "SWE" <------------------
 function generatePlayfairMatrix(key) {
     key = key.toUpperCase().replace(/J/g, "I");  // J is typically replaced by I in Playfair cipher
     const matrix = [];
@@ -226,5 +226,81 @@ function playfairDecrypt(cipherText, key) {
 
 // console.log("Encrypted text:", cipherText);
 // console.log("Decrypted text:", decryptedText);
+
+
+//-------------------------------> Vigenère Encyption <----------------------
+//------------------------------->key = "KEY" <------------------
+
+// Function to encrypt using Vigenère Cipher
+function encryptVigenere(plainText, key) {
+    let cipherText = '';
+    let keyIndex = 0;
+
+    for (let i = 0; i < plainText.length; i++) {
+        let char = plainText[i];
+        if (isAlpha(char)) {
+            let isLowerCase = char === char.toLowerCase();
+            let charCode = char.toUpperCase().charCodeAt(0);
+            let keyChar = key[keyIndex % key.length].toUpperCase();
+            let keyCode = keyChar.charCodeAt(0);
+
+            // Encryption formula
+            let encryptedCharCode = ((charCode + keyCode - 2 * 65) % 26) + 65;
+            let encryptedChar = String.fromCharCode(encryptedCharCode);
+
+            cipherText += isLowerCase ? encryptedChar.toLowerCase() : encryptedChar;
+            keyIndex++; // Only increment keyIndex for alphabetic characters
+        } else {
+            cipherText += char; // Non-alphabet characters are not encrypted
+        }
+    }
+    return cipherText;
+}
+
+//-------------------------------> Vigenère Decryption <----------------------
+//------------------------------->key = "KEY" <------------------
+
+// Function to decrypt using Vigenère Cipher
+function decryptVigenere(cipherText, key) {
+    let plainText = '';
+    let keyIndex = 0;
+
+    for (let i = 0; i < cipherText.length; i++) {
+        let char = cipherText[i];
+        if (isAlpha(char)) {
+            let isLowerCase = char === char.toLowerCase();
+            let charCode = char.toUpperCase().charCodeAt(0);
+            let keyChar = key[keyIndex % key.length].toUpperCase();
+            let keyCode = keyChar.charCodeAt(0);
+
+            // Decryption formula
+            let decryptedCharCode = ((charCode - keyCode + 26) % 26) + 65;
+            let decryptedChar = String.fromCharCode(decryptedCharCode);
+
+            plainText += isLowerCase ? decryptedChar.toLowerCase() : decryptedChar;
+            keyIndex++; // Only increment keyIndex for alphabetic characters
+        } else {
+            plainText += char; // Non-alphabet characters are not decrypted
+        }
+    }
+    return plainText;
+}
+
+// Helper function to check if a character is an alphabet letter
+function isAlpha(char) {
+    return /^[A-Za-z]$/.test(char);
+}
+
+// //------------------------->Testing purposes<------------------------
+
+// // Example Usage:
+// let key = "KEY"; // The fixed key
+// let plainText = "Hello World!";
+// let encryptedText = encryptVigenere(plainText, key);
+// console.log("Encrypted Text: " + encryptedText); // Output: Rijvs Uyvjn!
+
+// let decryptedText = decryptVigenere(encryptedText, key);
+// console.log("Decrypted Text: " + decryptedText); // Output: Hello World!
+
 
 //------------------------------->DES and vignere Methods should be added also<----------------------
