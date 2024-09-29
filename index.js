@@ -60,10 +60,10 @@
                 encryptionExplanation.innerHTML = '<p>The Monoalphabetic Substitution cipher replaces each letter with another letter based on a fixed substitution. This method provides basic encryption by shifting letters uniformly throughout the message, making it easy to implement. However, it is vulnerable to frequency analysis attacks due to its predictable nature.<br><br>key = 3</p>';
                 break;
             case 'playfair':
-                encryptionExplanation.innerHTML = '<p>The Playfair cipher encrypts pairs of letters using a 5x5 keyword matrix. By operating on digraphs, it increases complexity over simple substitution ciphers. It was historically used for tactical messages but is susceptible to specialized cryptanalysis techniques.<br><br>key = SWE</p>';
+                encryptionExplanation.innerHTML = '<p>The Playfair cipher encrypts pairs of letters using a 5x5 keyword matrix. By operating on digraphs, it increases complexity over simple substitution ciphers. It was historically used for tactical messages but is susceptible to specialized cryptanalysis techniques.<br><br>key = "SWE"</p>';
                 break;
             case 'vigenere':
-                encryptionExplanation.innerHTML = '<p>The Vigenère cipher uses a keyword to shift letters, creating a polyalphabetic substitution cipher. This method enhances security by changing the shift for each letter based on the keyword, making it harder to crack using frequency analysis.</p>';
+                encryptionExplanation.innerHTML = '<p>The Vigenère cipher uses a keyword to shift letters, creating a polyalphabetic substitution cipher. This method enhances security by changing the shift for each letter based on the keyword, making it harder to crack using frequency analysis.<br><br>key = "KEY"</p>';
                 break;
             case 'keyed':
                 encryptionExplanation.innerHTML = '<p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.<br><br>key = 13254</p>';
