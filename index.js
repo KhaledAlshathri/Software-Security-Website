@@ -104,7 +104,7 @@
                 outputText = keyedTranspositionCipher(inputText,key)
                 break;
             case 'monoalphabetic_playfair':
-                outputText = 'Combined encryption not implemented.';
+                outputText = playfairEncrypt(monoAlphabeticalEncryption(inputText,3),"SWE");
                 break;
             case 'des':
                 outputText = 'DES encryption not implemented.';
