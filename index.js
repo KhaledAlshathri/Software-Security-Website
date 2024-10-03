@@ -60,19 +60,19 @@
                 encryptionExplanation.innerHTML = '<p>The Monoalphabetic Substitution cipher replaces each letter with another letter based on a fixed substitution. This method provides basic encryption by shifting letters uniformly throughout the message, making it easy to implement. However, it is vulnerable to frequency analysis attacks due to its predictable nature.<br><br><h6>key = 3</h6></p>';
                 break;
             case 'playfair':
-                encryptionExplanation.innerHTML = '<p>The Playfair cipher encrypts pairs of letters using a 5x5 keyword matrix. By operating on digraphs, it increases complexity over simple substitution ciphers. It was historically used for tactical messages but is susceptible to specialized cryptanalysis techniques.<br><br><h6>key = "SWE"</h6></p>';
+                encryptionExplanation.innerHTML = '<p>The Playfair cipher encrypts pairs of letters using a 5x5 keyword matrix. By operating on digraphs, it increases complexity over simple substitution ciphers. It was historically used for tactical messages but is susceptible to specialized cryptanalysis techniques.<br><br><h6>key = SWE</h6></p>';
                 break;
             case 'vigenere':
-                encryptionExplanation.innerHTML = '<p>The Vigenère cipher uses a keyword to shift letters, creating a polyalphabetic substitution cipher. This method enhances security by changing the shift for each letter based on the keyword, making it harder to crack using frequency analysis.<br><br><h6>key = "KEY"</h6></p>';
+                encryptionExplanation.innerHTML = '<p>The Vigenère cipher uses a keyword to shift letters, creating a polyalphabetic substitution cipher. This method enhances security by changing the shift for each letter based on the keyword, making it harder to crack using frequency analysis.<br><br><h6>key = KSU</h6></p>';
                 break;
             case 'keyed':
                 encryptionExplanation.innerHTML = '<p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.<br><br><h6>key = 13254</h6></p>';
                 break;
             case 'monoalphabetic_playfair':
-                encryptionExplanation.innerHTML = '<p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.</p><h6>Monoalphabetic key = "3"</h6><h6>Playfair key = "SWE"</h6>';
+                encryptionExplanation.innerHTML = '<p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.<br><br><h6>Monoalphabetic key = 3</h6><h6>Playfair key = SWE</h6></p>';
                 break;
             case 'des':
-                encryptionExplanation.innerHTML = '<p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.<h6>key = "abcdefgh"</h6><h6>IV = "12345678"</h6></p>';
+                encryptionExplanation.innerHTML = '<p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.<br><br><h6>key = Security</h6><h6>IV = 12345678</h6></p>';
                 break;
             default:
                 encryptionExplanation.innerHTML = '<p>Please choose an encryption method.</p>';
@@ -99,7 +99,7 @@
                     outputText = playfairEncrypt(inputText,key);
                     break;
                 case 'vigenere':
-                    key="KEY";
+                    key="KSU";
                     outputText = encryptVigenere(inputText,key);
                     break;
                 case 'keyed':
@@ -110,7 +110,7 @@
                     outputText = playfairEncrypt(monoAlphabeticalEncryption(inputText,3),"SWE");
                     break;
                 case 'des':
-                    key = "abcdefgh";
+                    key = "Security";
                     outputText = desEncrypt(inputText, key);
                     break;
                 default:
@@ -173,10 +173,10 @@
                 decryptionExplanation.innerHTML = '<p>The Monoalphabetic Substitution decryption reverses the substitution to retrieve the original text. This method requires knowledge of the fixed substitution used during encryption. Due to its simplicity, it is relatively easy to decrypt if the substitution pattern is known.<br><br><h6>key = 3</h6></p>';
                 break;
             case 'playfair':
-                decryptionExplanation.innerHTML = '<p>The Playfair cipher decryption deciphers pairs of letters using the keyword matrix. It requires reconstructing the same matrix used during encryption, and reversing the encryption rules applied to the digraphs, making it more secure than simple substitution ciphers.<br><br><h6>key = "SWE"</h6></p>';
+                decryptionExplanation.innerHTML = '<p>The Playfair cipher decryption deciphers pairs of letters using the keyword matrix. It requires reconstructing the same matrix used during encryption, and reversing the encryption rules applied to the digraphs, making it more secure than simple substitution ciphers.<br><br><h6>key = SWE</h6></p>';
                 break;
             case 'vigenere':
-                decryptionExplanation.innerHTML = '<p>The Vigenère cipher decryption uses the keyword to reverse the letter shifts. By applying the inverse shifts dictated by the keyword, the original message is restored. Without the keyword, decryption becomes significantly more challenging.<br><br><h6>key= "KEY"</h6></p>';
+                decryptionExplanation.innerHTML = '<p>The Vigenère cipher decryption uses the keyword to reverse the letter shifts. By applying the inverse shifts dictated by the keyword, the original message is restored. Without the keyword, decryption becomes significantly more challenging.<br><br><h6>key= KSU</h6></p>';
                 break;
             default:
                 decryptionExplanation.innerHTML = '<p>Please choose a decryption method.</p>';
@@ -200,7 +200,7 @@
                 outputText =playfairDecrypt(inputText,key);
                 break;
             case 'vigenere':
-                key="KEY";
+                key="KSU";
                 outputText = decryptVigenere(inputText,key);
                 break;
             default:
@@ -553,9 +553,7 @@
     // let decryptedText = decryptVigenere(encryptedText, key);
     // console.log("Decrypted Text: " + decryptedText); // Output: Hello World!
 
-    //------------------------------->DES and vignere methods should be added also<----------------------
-
-
+    //------------------------------->DES Encryption<----------------------
 
     // DES Encryption in JavaScript with CBC Mode and PKCS#5 Padding
 
