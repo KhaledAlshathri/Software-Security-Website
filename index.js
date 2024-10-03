@@ -69,7 +69,7 @@
                 encryptionExplanation.innerHTML = '<p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.<br><br><h5>key = 13254</h5></p>';
                 break;
             case 'monoalphabetic_playfair':
-                encryptionExplanation.innerHTML = '<p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.</p>';
+                encryptionExplanation.innerHTML = '<p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.</p><h5>Monoalphabetic key = "3"</h5><h5>Playfair key = "SWE"</h5>';
                 break;
             case 'des':
                 encryptionExplanation.innerHTML = '<p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.<br><br><h5>key = "abcdefgh"</h5><h5>IV = "12345678"</h5></p>';
