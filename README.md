@@ -10,7 +10,7 @@ Cryption Hub is a web-based platform for data encryption and decryption. It prov
 
 ## Features
 
-- Encryption & Decryption methods
+- Multiple Encryption & Decryption Methods.
 - Smooth scrolling navigation.
 - Responsive design for mobile and desktop.
 - Copy and paste support for encrypted/decrypted text.
