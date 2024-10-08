@@ -26,9 +26,12 @@ Cryption Hub is a web-based platform for data encryption and decryption. It prov
    ```
 2. Navigate to the project directory:
    ```bash
-    cd Software-Security-Website
+   cd Software-Security-Website
    ```
 3. Open index.html in your browser.
+
+### OR  
+Open the project online, [click here](https://khaledalshathri.github.io/Software-Security-Website)
 
 ---
 
