@@ -33,12 +33,13 @@ Cryption Hub is a web-based platform for data encryption and decryption. It prov
 ---
 
 ## Project Structure
+   ```bash
 ├── assets/             # Static images and resources
 ├── index.html          # Main HTML file
 ├── style.css           # Main CSS file
 ├── index.js            # Main JavaScript file
 └── README.md           # This readme file
-
+   ```
 ---
 
 ## Encryption Methods
