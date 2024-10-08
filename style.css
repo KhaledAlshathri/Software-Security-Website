@@ -94,7 +94,29 @@ body {
     border-left: 5px solid #1abc9c;
     border-radius: 5px;
     animation: fadeIn 0.5s;
-    min-height: 250px;
+    min-height: 255px;
+}
+
+.key-display {
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 5px;
+    padding: 10px;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.key-display:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
 }
 
 /* ~~~~~~~~~~~~~ Fade In Animation ~~~~~~~~~~~~~ */
@@ -173,27 +195,13 @@ footer p, footer a {
         font-size: 1.25rem;
     }
 }
-/* ================== Key Styles ================== */
 
- h6 {
-    font-weight: bold;
-    color: #ffffff;
-    text-align: center;
-    font-size: 18px;
-    margin-top: 5px;
-    padding: 10px;
-    background: linear-gradient(135deg, #007BFF, #00A4FF);
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    max-width: 220px;
-    margin-left: auto;
-    margin-right: auto;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* ================== Social Media Icon Styles ================== */
+.social-icon img {
+    transition: transform 0.3s, filter 0.3s;
 }
 
-
-h6:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
+.social-icon:hover img {
+    transform: scale(1.1);
+    filter: brightness(1.2);
 }
