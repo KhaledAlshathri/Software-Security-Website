@@ -1,4 +1,3 @@
-
 (function() {
     /* ~~~~~~~~~~~~~ Smooth Scrolling for Navbar Links ~~~~~~~~~~~~~ */
     const navLinks = document.querySelectorAll('.nav-link');
@@ -57,22 +56,40 @@
 
         switch(selectedEncryptionMethod) {
             case 'monoalphabetic_substitution':
-                encryptionExplanation.innerHTML = '<p>The Monoalphabetic Substitution is a type of cipher where each letter in the plaintext is replaced by a corresponding letter from a fixed substitution alphabet. This means that the same letter will always be replaced by the same letter in the ciphertext.<br><br><h6>key = 3</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>The Monoalphabetic Substitution is a type of cipher where each letter in the plaintext is replaced by a corresponding letter from a fixed substitution alphabet. This means that the same letter will always be replaced by the same letter in the ciphertext.</p>
+                    <div class="key-display">Key = 3</div>
+                `;
                 break;
             case 'playfair':
-                encryptionExplanation.innerHTML = '<p>The Playfair is a digraph substitution cipher, meaning it encrypts pairs of letters instead of single letters. It uses a 5x5 grid of letters constructed from a keyword, which removes repeated letters and combines "I" and "J" into a single position.<br><br><h6>key = SWE</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>The Playfair is a digraph substitution cipher, meaning it encrypts pairs of letters instead of single letters. It uses a 5x5 grid of letters constructed from a keyword, which removes repeated letters and combines "I" and "J" into a single position.</p>
+                    <div class="key-display">Key = SWE</div>
+                `;
                 break;
             case 'vigenere':
-                encryptionExplanation.innerHTML = '<p>The Vigenère cipher is a method of encrypting alphabetic text by using a simple form of polyalphabetic substitution. It uses a keyword to shift letters in the plaintext by different amounts based on the position of the letter in the keyword.<br><br><h6>key = KSU</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>The Vigenère cipher is a method of encrypting alphabetic text by using a simple form of polyalphabetic substitution. It uses a keyword to shift letters in the plaintext by different amounts based on the position of the letter in the keyword.</p>
+                    <div class="key-display">Key = KSU</div>
+                `;
                 break;
             case 'keyed':
-                encryptionExplanation.innerHTML = '<p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.<br><br><h6>key = 13254</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.</p>
+                    <div class="key-display">Key = 13254</div>
+                `;
                 break;
             case 'monoalphabetic_playfair':
-                encryptionExplanation.innerHTML = '<p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.<br><br><h6>Monoalphabetic key = 3</h6><h6>Playfair key = SWE</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.</p>
+                    <div class="key-display">Monoalphabetic Key = 3<br></br>Playfair Key = SWE</div>
+                `;
                 break;
             case 'des':
-                encryptionExplanation.innerHTML = '<p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.<br><br><h6>key = Security</h6><h6>IV = 12345678</h6></p>';
+                encryptionExplanation.innerHTML = `
+                    <p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.</p>
+                    <div class="key-display">Key = Security<br></br>IV= 12345678</div>
+                `;
                 break;
             default:
                 encryptionExplanation.innerHTML = '<p>Please choose an encryption method.</p>';
@@ -85,7 +102,18 @@
         const inputText = encryptionInput.value;
         let outputText = '';
         let key;
-    
+        const errorMessage = document.getElementById('encryption_error_message');
+
+        if (containsNonEnglishCharacters(inputText)) {
+            errorMessage.style.display = 'block';
+            errorMessage.textContent = 'Please use English letters only.';
+            encryptionOutput.value = '';
+            encryptionCopyButton.disabled = true;
+            return;
+        } else {
+            errorMessage.style.display = 'none';
+        }
+
         if (inputText.trim() === '') {
             outputText = '';
         } else {
@@ -117,10 +145,11 @@
                     outputText = '';
             }
         }
-    
+
         encryptionOutput.value = outputText;
+        encryptionCopyButton.disabled = outputText.trim() === '';
     }
-    
+
     // ~~~~~~~~~~~~~ Copy Encryption Output ~~~~~~~~~~~~~
     encryptionCopyButton.addEventListener('click', function() {
         const outputText = encryptionOutput.value;
@@ -170,13 +199,22 @@
 
         switch(selectedDecryptionMethod) {
             case 'monoalphabetic_substitution':
-                decryptionExplanation.innerHTML = '<p>The Monoalphabetic Substitution decryption is a process of reversing the encryption by replacing each letter in the ciphertext with the corresponding letter from the original alphabet used in encryption.<br><br><h6>key = 3</h6></p>';
+                decryptionExplanation.innerHTML = `
+                    <p>The Monoalphabetic Substitution decryption is a process of reversing the encryption by replacing each letter in the ciphertext with the corresponding letter from the original alphabet used in encryption.</p>
+                    <div class="key-display">Key = 3</div>
+                `;
                 break;
             case 'playfair':
-                decryptionExplanation.innerHTML = '<p>The Playfair cipher decryption is the reverse of the Playfair encryption process. It involves using the same 5x5 grid created with the keyword to decrypt the ciphertext pairs back into plaintext.<br><br><h6>key = SWE</h6></p>';
+                decryptionExplanation.innerHTML = `
+                    <p>The Playfair cipher decryption is the reverse of the Playfair encryption process. It involves using the same 5x5 grid created with the keyword to decrypt the ciphertext pairs back into plaintext.</p>
+                    <div class="key-display">Key = SWE</div>
+                `;
                 break;
             case 'vigenere':
-                decryptionExplanation.innerHTML = '<p>The Vigenère cipher decryption is the reverse process of the Vigenère encryption. It uses the same keyword to revert the ciphertext back to the original plaintext by reversing the shifting process.<br><br><h6>key= KSU</h6></p>';
+                decryptionExplanation.innerHTML = `
+                    <p>The Vigenère cipher decryption is the reverse process of the Vigenère encryption. It uses the same keyword to revert the ciphertext back to the original plaintext by reversing the shifting process.</p>
+                    <div class="key-display">Key = KSU</div>
+                `;
                 break;
             default:
                 decryptionExplanation.innerHTML = '<p>Please choose a decryption method.</p>';
@@ -189,25 +227,41 @@
         const inputText = decryptionInput.value;
         let outputText = '';
         let key;
+        const errorMessage = document.getElementById('decryption_error_message');
 
-        switch(selectedDecryptionMethod) {
-            case 'monoalphabetic_substitution':
-                key=3;
-                outputText = monoAlphabeticalDecryption(inputText,key);
-                break;
-            case 'playfair':
-                key="SWE";
-                outputText =playfairDecrypt(inputText,key);
-                break;
-            case 'vigenere':
-                key="KSU";
-                outputText = decryptVigenere(inputText,key);
-                break;
-            default:
-                outputText = '';
+        if (containsNonEnglishCharacters(inputText)) {
+            errorMessage.style.display = 'block';
+            errorMessage.textContent = 'Please use English letters only.';
+            decryptionOutput.value = '';
+            decryptionCopyButton.disabled = true;
+            return;
+        } else {
+            errorMessage.style.display = 'none';
+        }
+
+        if (inputText.trim() === '') {
+            outputText = '';
+        } else {
+            switch(selectedDecryptionMethod) {
+                case 'monoalphabetic_substitution':
+                    key=3;
+                    outputText = monoAlphabeticalDecryption(inputText,key);
+                    break;
+                case 'playfair':
+                    key="SWE";
+                    outputText =playfairDecrypt(inputText,key);
+                    break;
+                case 'vigenere':
+                    key="KSU";
+                    outputText = decryptVigenere(inputText,key);
+                    break;
+                default:
+                    outputText = '';
+            }
         }
 
         decryptionOutput.value = outputText;
+        decryptionCopyButton.disabled = outputText.trim() === '';
     }
 
     // ~~~~~~~~~~~~~ Copy Decryption Output ~~~~~~~~~~~~~
@@ -244,7 +298,14 @@
             messageElement.style.display = 'none';
         }, 2000);
     }
-   //---------------> Encryption / decryption  methods<------------------------
+
+    // ~~~~~~~~~~~~~ Function to check for non-English characters ~~~~~~~~~~~~~
+    function containsNonEnglishCharacters(text) {
+        // Matches any character that is not a-z or A-Z or common punctuation and space
+        return /[^a-zA-Z\s.,!?;:'"-]/.test(text);
+    }
+
+    //---------------> Encryption / decryption  methods<------------------------
 
     // -------------------------------------->keyedTranspositionCipher<---------------------------------
     //--------------------------------------->key = 13254<---------------------------------------------
@@ -283,12 +344,6 @@
         const cipherText = cipherList.join('');
         return cipherText;
     }
-    ////----------------------------->for testing purposes<-----------------------------------
-    // const key = 13254;
-    // const plainText = "Salma";
-    
-    // const cipherText = keyedTranspositionCipher(plainText, key);
-    // console.log(`Cipher text: ${cipherText}`);
 
     //------------------------------------------> monoAlphabetical Encryption <--------------------------------------
     //------------------------------------------>key = 3<--------------------------------------
@@ -314,12 +369,6 @@
         return cipherText;
     }
 
-    // // ------------------------------->for testing purposes<-----------------------------
-    // const plainText1= "aboJan";
-    // const key1 = 3;
-    // const cipherText = monoAlphabeticalEncryption(plainText1, key1);
-    // console.log(`Cipher text: ${cipherText}`);
-
     //------------------------------------------> monoAlphabetical Decryption <--------------------------------------
     //------------------------------------------>key = 3<--------------------------------------
     function monoAlphabeticalDecryption(plainText, key) {
@@ -342,13 +391,6 @@
 
         return cipherText;
     }
-
-    // // ------------------------------->for testing purposes<-----------------------------
-    // const plainText = "DERMDQ"; // Encrypted version of "HELLO" with key 3
-    // const key = 3;
-    // const decryptedText = monoAlphabeticalDecryption(plainText, key);
-    // console.log(`Decrypted text: ${decryptedText}`);
-
 
     //------------------------->Playfair enc/dec<-----------------------------
     //------------------------------->key = SWE<------------------
@@ -469,17 +511,7 @@
         return plainText.join('');
     }
 
-    // //------------------------->Testing purposes<------------------------
-    // const key = "SWE";
-    // const plainText = "wordle";
-    // const cipherText = playfairEncrypt(plainText, key);
-    // const decryptedText = playfairDecrypt(cipherText, key);
-    
-    // console.log("Encrypted text:", cipherText);
-    // console.log("Decrypted text:", decryptedText);
-
-
-    //-------------------------------> Vigenère Encyption <----------------------
+    //-------------------------------> Vigenère Encryption <----------------------
     //------------------------------->key = "KEY" <------------------
 
     // Function to encrypt using Vigenère Cipher
@@ -541,17 +573,6 @@
     function isAlpha(char) {
         return /^[A-Za-z]$/.test(char);
     }
-
-    // //------------------------->Testing purposes<------------------------
-    
-    // // Example Usage:
-    // let key = "KEY"; // The fixed key
-    // let plainText = "Hello World!";
-    // let encryptedText = encryptVigenere(plainText, key);
-    // console.log("Encrypted Text: " + encryptedText); // Output: Rijvs Uyvjn!
-    
-    // let decryptedText = decryptVigenere(encryptedText, key);
-    // console.log("Decrypted Text: " + decryptedText); // Output: Hello World!
 
     //------------------------------->DES Encryption<----------------------
 
