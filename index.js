@@ -312,7 +312,7 @@
 
      function keyedTranspositionCipher(plainText, key) {
         const keyLength = key.toString().length;
-        plainText = plainText.toUpperCase();
+        plainText = plainText.toUpperCase().replace(/\s+/g,"");
 
         // Padding with 'X' if the plain text isn't divisible by the key length
         while (plainText.length % keyLength !== 0) {
@@ -341,7 +341,7 @@
         }
 
         // Combine all chunks to form the final cipher text
-        const cipherText = cipherList.join('');
+        const cipherText = cipherList.join(" ");
         return cipherText;
     }
 
