@@ -104,7 +104,7 @@
         let key;
         const errorMessage = document.getElementById('encryption_error_message');
 
-        if (containsNonEnglishCharacters(inputText)) {
+        if (containsNonEnglishCharacters(inputText) && (selectedEncryptionMethod!="des")) {
             errorMessage.style.display = 'block';
             errorMessage.textContent = 'Please use English letters only.';
             encryptionOutput.value = '';
@@ -132,7 +132,7 @@
                     break;
                 case 'keyed':
                     key= 13254;
-                    outputText = keyedTranspositionCipher(inputText,key);
+                    outputText = keyedTranspositionEncryption(inputText,key);
                     break;
                 case 'monoalphabetic_playfair':
                     outputText = playfairEncrypt(monoAlphabeticalEncryption(inputText,3),"SWE");
@@ -216,6 +216,24 @@
                     <div class="key-display">Key = KSU</div>
                 `;
                 break;
+            case 'keyed':
+                decryptionExplanation.innerHTML = `
+                <p>The Keyed Caesar cipher decrypts by reversing the shifts applied during encryption, based on the same keyword. This method ensures that the correct keyword is needed to restore the original message, enhancing the security compared to simple fixed-shift ciphers.</p>
+                <div class="key-display">Key = 13254</div>
+            `;
+                break;
+            case 'monoalphabetic_playfair':
+                decryptionExplanation.innerHTML = `
+                <p>This method decrypts using the reverse process of the Monoalphabetic Substitution and Playfair cipher. By first applying the Playfair decryption followed by Monoalphabetic substitution, the original message is restored, requiring both keys for successful decryption.</p>
+                <div class="key-display">Monoalphabetic Key = 3<br></br>Playfair Key = SWE</div>
+            `;
+                break;
+            case 'des':
+                decryptionExplanation.innerHTML = `
+                <p>DES (Data Encryption Standard) decrypts data by reversing the encryption process using the same 56-bit key. It operates on 64-bit blocks, restoring the original data when the correct key and initialization vector (IV) are provided.</p>
+                 <div class="key-display">Key = Security<br></br>IV = 12345678</div>
+            `;
+                break;
             default:
                 decryptionExplanation.innerHTML = '<p>Please choose a decryption method.</p>';
         }
@@ -229,7 +247,7 @@
         let key;
         const errorMessage = document.getElementById('decryption_error_message');
 
-        if (containsNonEnglishCharacters(inputText)) {
+        if (containsNonEnglishCharacters(inputText)&& selectedDecryptionMethod!="des") {
             errorMessage.style.display = 'block';
             errorMessage.textContent = 'Please use English letters only.';
             decryptionOutput.value = '';
@@ -255,6 +273,16 @@
                     key="KSU";
                     outputText = decryptVigenere(inputText,key);
                     break;
+                case 'keyed':
+                    key= 13254;
+                    outputText = keyedTranspositionDecryption(inputText,key);
+                    break;
+                case 'monoalphabetic_playfair':
+                    outputText = monoAlphabeticalDecryption(playfairDecrypt(inputText,"SWE"),3);                    break;   
+                case 'des':
+                    key = "Security";
+                    outputText = desDecrypt(inputText, key);
+                    break;       
                 default:
                     outputText = '';
             }
@@ -307,10 +335,10 @@
 
     //---------------> Encryption / decryption  methods<------------------------
 
-    // -------------------------------------->keyedTranspositionCipher<---------------------------------
+    // -------------------------------------->keyedTranspositionCipher encryption<---------------------------------
     //--------------------------------------->key = 13254<---------------------------------------------
 
-     function keyedTranspositionCipher(plainText, key) {
+     function keyedTranspositionEncryption(plainText, key) {
         const keyLength = key.toString().length;
         plainText = plainText.toUpperCase().replace(/\s+/g,"");
 
@@ -344,6 +372,41 @@
         const cipherText = cipherList.join(" ");
         return cipherText;
     }
+// -------------------------------------->keyedTranspositionCipher decryption<---------------------------------
+//--------------------------------------->key = 13254<---------------------------------------------
+
+function keyedTranspositionDecryption(cipherText, key) {
+    const keyLength = key.toString().length;
+    while (cipherText.length%keyLength){
+        cipherText+="X";
+    }
+    const cipherChunks = cipherText.split(" ");
+
+    // Convert key into an array of 0-based indices
+    const keyList = key.toString().split('').map(digit => parseInt(digit) - 1);
+    
+    // Create an inverse key array to map the cipher text back to its original order
+    const inverseKeyList = [];
+    for (let i = 0; i < keyLength; i++) {
+        inverseKeyList[keyList[i]] = i;
+    }
+
+    const plainList = [];
+
+    // Rearrange each chunk back to its original order according to the inverse key
+    for (const chunk of cipherChunks) {
+        let originalChunk = '';
+        for (let i = 0; i < keyLength; i++) {
+            originalChunk += chunk[inverseKeyList[i]];
+        }
+        plainList.push(originalChunk);
+    }
+
+    // Combine all chunks to form the final plain text and remove trailing padding 'X'
+    const plainText = plainList.join("").replace(/X+$/, '');
+
+    return plainText;
+}
 
     //------------------------------------------> monoAlphabetical Encryption <--------------------------------------
     //------------------------------------------>key = 3<--------------------------------------
@@ -432,7 +495,7 @@
     //------------------------>playfair Encryption<------------------------------
     function playfairEncrypt(plainText, key) {
         const matrix = generatePlayfairMatrix(key);
-        plainText = plainText.toUpperCase().replace(/J/g, "I");
+        plainText = plainText.toUpperCase().replace(/J/g, "I").replace(" ","");
         const plainList = [];
 
         // Split into digraphs and add padding if necessary
@@ -507,8 +570,19 @@
                 plainText.push(matrix[row2][col1]);
             }
         }
+        let decryptedText = plainText.join('');
+        
+        const vowels = "AEIOU";// because we don't want to remove X if it has a meaning
+        let Result="";//to store the decrypted text after modyfiying
+for (let i = 0; i < decryptedText.length; i++) {
+    if (decryptedText[i] === "X" && !vowels.includes(decryptedText[i - 1])) {
+        continue;
+    }
+    Result+=decryptedText[i];//we want to skip any non meaningful "X"
+}
+        decryptedText=Result;
+        return decryptedText
 
-        return plainText.join('');
     }
 
     //-------------------------------> Vigenère Encryption <----------------------
@@ -884,4 +958,115 @@
         ]
     ];
     
-    })();
+    
+
+        //------------------------->DES decyption<---------------------------
+        // DES Decryption in JavaScript with CBC Mode and PKCS#5 Padding
+        function desDecrypt(ciphertext, key) {
+            let iv = "12345678";  // 8 ASCII characters for IV
+
+            if (key.length !== 8) {
+                throw new Error("Key must be 8 characters long for DES.");
+            }
+
+            // Convert key and IV to binary
+            let keyBin = bytesToBin(asciiToBytes(key));
+            let ivBin = bytesToBin(asciiToBytes(iv));
+
+            let previousCipherBlock = ivBin;
+            let plaintext = [];
+
+            // Split ciphertext into blocks of 16 hex characters (64 bits)
+            let blocks = [];
+            for (let i = 0; i < ciphertext.length; i += 16) {
+                blocks.push(ciphertext.substr(i, 16));
+            }
+
+            // Decrypt each block
+            for (let blockHex of blocks) {
+                // Convert hex block to binary string
+                let blockBin = hexToBin(blockHex);
+
+                // Decrypt block using DES with reversed subkeys
+                let plainBlockBin = desDecryptBlock(blockBin, keyBin);
+
+                // XOR with previous cipher block (CBC mode)
+                let decryptedBlock = xor(plainBlockBin, previousCipherBlock);
+
+                // Update previous cipher block
+                previousCipherBlock = blockBin;
+
+                // Append decrypted block to plaintext
+                plaintext.push(...binToBytes(decryptedBlock));
+            }
+
+            // Remove PKCS#5 padding
+            return bytesToAscii(pkcs5Unpad(plaintext));
+        }
+
+        // Convert hexadecimal string to binary string
+        function hexToBin(hexStr) {
+            let binStr = '';
+            for (let i = 0; i < hexStr.length; i++) {
+                let binDigit = parseInt(hexStr[i], 16).toString(2).padStart(4, '0');
+                binStr += binDigit;
+            }
+            return binStr;
+        }
+
+        // PKCS#5 Unpadding
+        function pkcs5Unpad(bytes) {
+            let padLen = bytes[bytes.length - 1];
+            return bytes.slice(0, bytes.length - padLen);
+        }
+
+// Convert binary string to byte array
+function binToBytes(binStr) {
+    let bytes = [];
+    for (let i = 0; i < binStr.length; i += 8) {
+        bytes.push(parseInt(binStr.substr(i, 8), 2));
+    }
+    return bytes;
+}
+
+// Convert byte array to ASCII string
+function bytesToAscii(bytes) {
+    return bytes.map(byte => String.fromCharCode(byte)).join('');
+
+
+}
+// DES block decryption (reversed encryption)
+function desDecryptBlock(blockBin, keyBin) {
+    // Initial permutation
+    let permutedText = permute(blockBin, initialPermutationTable);
+
+    // Generate 16 subkeys and reverse them
+    let subKeys = generateSubKeys(keyBin).reverse();
+
+    // Split text into left and right halves
+    let left = permutedText.substring(0, 32);
+    let right = permutedText.substring(32, 64);
+
+    // 16 rounds of DES decryption
+    for (let i = 0; i < 16; i++) {
+        let expandedRight = permute(right, expansionTable);
+        let xored = xor(expandedRight, subKeys[i]);
+        let substituted = sBoxSubstitution(xored);
+        let permuted = permute(substituted, permutationTable);
+        let temp = xor(left, permuted);
+        left = right;
+        right = temp;
+    }
+
+    // Combine left and right halves
+    let combined = right + left;
+
+    // Final permutation
+    let plainBin = permute(combined, finalPermutationTable);
+
+    return plainBin;
+}
+
+
+})();
+
