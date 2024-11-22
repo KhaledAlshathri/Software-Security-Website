@@ -64,6 +64,9 @@ body {
     color: #555;
 }
 
+.interface_div{
+    margin-top: 0px;
+}
 /* ~~~~~~~~~~~~~ Section Styles ~~~~~~~~~~~~~ */
 .encryption-section, .team-section {
     padding-top: 60px;
@@ -193,6 +196,13 @@ footer p, footer a {
 
     .navbar-brand{
         font-size: 1.25rem;
+    }
+
+}
+
+@media (min-width: 600px) {
+    .interface_div{
+        margin-top: 40px;
     }
 }
 
