@@ -205,3 +205,159 @@ footer p, footer a {
     transform: scale(1.1);
     filter: brightness(1.2);
 }
+
+/* ~~~~~~~~~~~~~ Key Change Button Styles ~~~~~~~~~~~~~ */
+.key-change-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.key-change-button:hover {
+    background: linear-gradient(135deg, #16a085, #1abc9c);
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+/* ~~~~~~~~~~~~~ Key Input Field Styles ~~~~~~~~~~~~~ */
+.key-input {
+    width: 100%;
+    max-width: 250px;
+    margin: 10px auto;
+    padding: 8px;
+    border: 2px solid #1abc9c;
+    border-radius: 5px;
+}
+
+.key-input label {
+    font-weight: bold;
+    color: #011e4b;
+}
+
+.key-input input {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.key-input button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #212529;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.key-input button:hover {
+    background: #17a589;
+    cursor: pointer;
+}
+
+/* ================== Key Container Styles ================== */
+.key-container {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    margin-top: 10px;
+}
+
+.key-container .key-display,
+.key-container .key-change-button {
+    font-weight: bold;
+    color: #ffffff ;
+    text-align: center;
+    font-size: 15px;
+    padding: 10px;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    margin: 0 5px; 
+    transition: all 0.3s ease; 
+}
+
+.key-container .key-display:hover,
+.key-container .key-change-button:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
+    cursor: pointer;
+}
+
+/* ================== Key Input Container Styles ================== */
+.key-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    font-size: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: 20px auto;
+    transition: all 0.3s ease; 
+}
+
+.key-input-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.key-input-container button {
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    font-size: 15px;
+    margin-top: 20px;
+    padding: 10px;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border: none;
+    border-radius: 10px;
+    width: auto;
+    transition: all 0.3s ease; 
+}
+
+.key-input-container button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.key-input {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.key-input label {
+    display: block;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.key-input input {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 4px;
+}
+
+.save_key_button{
+    border: 1.5px solid #61c4b0 !important;
+   
+}
+

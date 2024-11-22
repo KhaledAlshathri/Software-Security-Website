@@ -33,6 +33,172 @@
         });
     });
 
+    /* ================== Key Management ================== */
+    // Define keys for encryption and decryption methods
+    let encryptionKeys = {
+        'monoalphabetic_substitution': 3,
+        'playfair': 'SWE',
+        'vigenere': 'KSU',
+        'keyed': 13254,
+        'monoalphabetic_playfair': { 'monoalphabetic': 3, 'playfair': 'SWE' },
+        'des': { 'key': 'Security', 'iv': '12345678' }
+    };
+
+    let decryptionKeys = JSON.parse(JSON.stringify(encryptionKeys)); // Clone the encryption keys
+
+    // Function to capitalize first letter
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // Function to get Key Display HTML
+    function getKeyDisplayHTML(mode, method) {
+        let key = (mode === 'encryption') ? encryptionKeys[method] : decryptionKeys[method];
+        let keyDisplayHTML = `
+            <div class="key-container">
+                <div class="key-display">
+        `;
+        if (typeof key === 'object' && !Array.isArray(key)) {
+            for (let keyName in key) {
+                keyDisplayHTML += `${capitalizeFirstLetter(keyName)} ${method === 'des' ? '' : 'Key'} = ${key[keyName]}<br>`;
+            }
+        } else {
+            keyDisplayHTML += `Key = <span id="${mode}_key_display">${key}</span>`;
+        }
+        keyDisplayHTML += `
+                </div>
+                <button id="${mode}_change_key_button" class="key-change-button">Change Key</button>
+            </div>
+        `;
+        return keyDisplayHTML;
+    }
+
+    function handleChangeKey(mode, method) {
+        let keyContainerDiv = document.querySelector(`#${mode}_explanation .key-container`);
+        if (!keyContainerDiv) return;
+
+        let currentKey = (mode === 'encryption') ? encryptionKeys[method] : decryptionKeys[method];
+
+        // Build input fields based on the method and keys
+        let inputFieldsHTML = '<div class="key-input-container">';
+        if (typeof currentKey === 'object' && !Array.isArray(currentKey)) {
+            for (let keyName in currentKey) {
+                let label = keyName.toUpperCase();
+                inputFieldsHTML += `
+                    <div class="key-input">
+                        <label>${label}:</label>
+                        <input type="text" id="${mode}_key_input_${keyName}" value="${currentKey[keyName]}">
+                    </div>
+                `;
+            }
+        } else {
+            inputFieldsHTML += `
+                <div class="key-input">
+                    <label>Key:</label>
+                    <input type="text" id="${mode}_key_input" value="${currentKey}">
+                </div>
+            `;
+        }
+
+        inputFieldsHTML += `
+            <button id="${mode}_save_key_button" class="key-change-button save_key_button">Save Key</button>
+        </div>
+        `;
+
+        keyContainerDiv.innerHTML = inputFieldsHTML;
+
+        // Reattach event listener for the "Save Key" button
+        document.getElementById(`${mode}_save_key_button`).addEventListener('click', function() {
+            // Read the new key(s)
+            let newKey;
+            if (typeof currentKey === 'object' && !Array.isArray(currentKey)) {
+                newKey = {};
+                for (let keyName in currentKey) {
+                    newKey[keyName] = document.getElementById(`${mode}_key_input_${keyName}`).value.trim();
+                }
+            } else {
+                newKey = document.getElementById(`${mode}_key_input`).value.trim();
+            }
+
+            // Validate the new key(s)
+            if (!validateKeys(method, newKey)) {
+                return; // If validation fails, exit
+            }
+
+            // Save the new key(s)
+            if (mode === 'encryption') {
+                encryptionKeys[method] = newKey;
+            } else {
+                decryptionKeys[method] = newKey;
+            }
+
+            // Update the key display
+            keyContainerDiv.innerHTML = getKeyDisplayHTML(mode, method);
+
+            // Re-add event listener for Change Key button
+            if (document.getElementById(`${mode}_change_key_button`)) {
+                document.getElementById(`${mode}_change_key_button`).addEventListener('click', function() {
+                    handleChangeKey(mode, method);
+                });
+            }
+
+            // Re-run encryption/decryption
+            if (mode === 'encryption') {
+                updateEncryptionOutput();
+            } else {
+                // Clear any existing error messages
+                clearErrorMessage('decryption_error_message');
+                updateDecryptionOutput(); // Ensure this function is called
+            }
+        });
+    }
+
+    // Function to validate keys based on method
+    function validateKeys(method, key) {
+        if (method === 'monoalphabetic_substitution') {
+            let keyValue = parseInt(key);
+            if (isNaN(keyValue)) {
+                alert('Please enter a valid number for the key.');
+                return false;
+            } else {
+                // Ensure key is between 1 and 25
+                if (keyValue < 1 || keyValue > 25) {
+                    alert('Key must be between 1 and 25.');
+                    return false;
+                }
+                if (typeof key === 'string') {
+                    key = keyValue;
+                }
+            }
+        } else if (method === 'keyed') {
+            let keyValue = parseInt(key);
+            if (isNaN(keyValue)) {
+                alert('Please enter a valid number for the key.');
+                return false;
+            } else {
+                // Key should be a permutation of digits, e.g., 13254
+                let keyStr = keyValue.toString();
+                let digits = keyStr.split('');
+                let uniqueDigits = new Set(digits);
+                if (uniqueDigits.size !== digits.length) {
+                    alert('Key digits must be unique.');
+                    return false;
+                }
+            }
+        } else if (method === 'des') {
+            if (key['key'].length !== 8) {
+                alert('DES key must be 8 characters long.');
+                return false;
+            }
+            if (key['iv'].length !== 8) {
+                alert('DES IV must be 8 characters long.');
+                return false;
+            }
+        }
+        // Add more validations as needed
+        return true;
+    }
+
     /* ================== Encryption Section ================== */
     const encryptionMethodsSelect = document.getElementById('encryption_methods');
     const encryptionExplanation = document.getElementById('encryption_explanation');
@@ -42,58 +208,72 @@
     const encryptionCopyButton = document.getElementById('encryption_copy_button');
 
     let selectedEncryptionMethod = '';
+    let encryptionKey;
 
     encryptionMethodsSelect.addEventListener('change', function() {
         selectedEncryptionMethod = this.value;
         encryptionInput.disabled = false;
         encryptionPasteButton.disabled = false;
-        updateEncryptionOutput();
+
+        // Set the key for the selected method
+        encryptionKey = encryptionKeys[selectedEncryptionMethod];
 
         // ~~~~~~~~~~~~~ Add fade-in animation ~~~~~~~~~~~~~
         encryptionExplanation.classList.remove('fade-in');
         void encryptionExplanation.offsetWidth; // Trigger reflow to restart animation
         encryptionExplanation.classList.add('fade-in');
 
+        let explanationText = '';
         switch(selectedEncryptionMethod) {
             case 'monoalphabetic_substitution':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Monoalphabetic Substitution is a type of cipher where each letter in the plaintext is replaced by a corresponding letter from a fixed substitution alphabet. This means that the same letter will always be replaced by the same letter in the ciphertext.</p>
-                    <div class="key-display">Key = 3</div>
+                    ${getKeyDisplayHTML('encryption', 'monoalphabetic_substitution')}
                 `;
                 break;
             case 'playfair':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Playfair is a digraph substitution cipher, meaning it encrypts pairs of letters instead of single letters. It uses a 5x5 grid of letters constructed from a keyword, which removes repeated letters and combines "I" and "J" into a single position.</p>
-                    <div class="key-display">Key = SWE</div>
+                    ${getKeyDisplayHTML('encryption', 'playfair')}
                 `;
                 break;
             case 'vigenere':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Vigenère cipher is a method of encrypting alphabetic text by using a simple form of polyalphabetic substitution. It uses a keyword to shift letters in the plaintext by different amounts based on the position of the letter in the keyword.</p>
-                    <div class="key-display">Key = KSU</div>
+                    ${getKeyDisplayHTML('encryption', 'vigenere')}
                 `;
                 break;
             case 'keyed':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Keyed Caesar cipher shifts letters based on a keyword, adding complexity to the standard Caesar cipher. This variation uses a keyword to determine the shift sequence, providing better security than a fixed shift value.</p>
-                    <div class="key-display">Key = 13254</div>
+                    ${getKeyDisplayHTML('encryption', 'keyed')}
                 `;
                 break;
             case 'monoalphabetic_playfair':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>This method combines Monoalphabetic Substitution and Playfair cipher for enhanced security. By applying two encryption methods, it adds layers of complexity, making unauthorized decryption significantly more difficult.</p>
-                    <div class="key-display">Monoalphabetic Key = 3<br></br>Playfair Key = SWE</div>
+                    ${getKeyDisplayHTML('encryption', 'monoalphabetic_playfair')}
                 `;
                 break;
             case 'des':
-                encryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>DES (Data Encryption Standard) is a symmetric-key algorithm used for secure data encryption. It operates on 64-bit blocks and uses a 56-bit key, providing a foundational approach to modern encryption, though it has been superseded by more secure algorithms.</p>
-                    <div class="key-display">Key = Security<br></br>IV= 12345678</div>
+                    ${getKeyDisplayHTML('encryption', 'des')}
                 `;
                 break;
             default:
-                encryptionExplanation.innerHTML = '<p>Please choose an encryption method.</p>';
+                explanationText = '<p>Please choose an encryption method.</p>';
         }
+        encryptionExplanation.innerHTML = explanationText;
+
+        // Add event listener for Change Key button
+        if (document.getElementById('encryption_change_key_button')) {
+            document.getElementById('encryption_change_key_button').addEventListener('click', function() {
+                handleChangeKey('encryption', selectedEncryptionMethod);
+            });
+        }
+
+        updateEncryptionOutput();
     });
 
     encryptionInput.addEventListener('input', updateEncryptionOutput);
@@ -101,10 +281,9 @@
     function updateEncryptionOutput() {
         const inputText = encryptionInput.value;
         let outputText = '';
-        let key;
         const errorMessage = document.getElementById('encryption_error_message');
 
-        if (containsNonEnglishCharacters(inputText) && (selectedEncryptionMethod!="des")) {
+        if (containsNonEnglishCharacters(inputText) && selectedEncryptionMethod != "des") {
             errorMessage.style.display = 'block';
             errorMessage.textContent = 'Please use English letters only.';
             encryptionOutput.value = '';
@@ -117,32 +296,33 @@
         if (inputText.trim() === '') {
             outputText = '';
         } else {
-            switch(selectedEncryptionMethod) {
-                case 'monoalphabetic_substitution':
-                    key= 3;
-                    outputText=monoAlphabeticalEncryption(inputText,key);
-                    break;
-                case 'playfair':
-                    key="SWE";
-                    outputText = playfairEncrypt(inputText,key);
-                    break;
-                case 'vigenere':
-                    key="KSU";
-                    outputText = encryptVigenere(inputText,key);
-                    break;
-                case 'keyed':
-                    key= 13254;
-                    outputText = keyedTranspositionEncryption(inputText,key);
-                    break;
-                case 'monoalphabetic_playfair':
-                    outputText = playfairEncrypt(monoAlphabeticalEncryption(inputText,3),"SWE");
-                    break;
-                case 'des':
-                    key = "Security";
-                    outputText = desEncrypt(inputText, key);
-                    break;
-                default:
-                    outputText = '';
+            let key = encryptionKeys[selectedEncryptionMethod];
+            try {
+                switch(selectedEncryptionMethod) {
+                    case 'monoalphabetic_substitution':
+                        outputText = monoAlphabeticalEncryption(inputText, parseInt(key));
+                        break;
+                    case 'playfair':
+                        outputText = playfairEncrypt(inputText, key);
+                        break;
+                    case 'vigenere':
+                        outputText = encryptVigenere(inputText, key);
+                        break;
+                    case 'keyed':
+                        outputText = keyedTranspositionEncryption(inputText, key);
+                        break;
+                    case 'monoalphabetic_playfair':
+                        outputText = playfairEncrypt(monoAlphabeticalEncryption(inputText, parseInt(key['monoalphabetic'])), key['playfair']);
+                        break;
+                    case 'des':
+                        outputText = desEncrypt(inputText, key['key'], key['iv']);
+                        break;
+                    default:
+                        outputText = '';
+                }
+            } catch (e) {
+                showErrorMessage('encryption_error_message', 'Encryption failed: ' + e.message);
+                outputText = '';
             }
         }
 
@@ -150,7 +330,7 @@
         encryptionCopyButton.disabled = outputText.trim() === '';
     }
 
-    // ~~~~~~~~~~~~~ Copy Encryption Output ~~~~~~~~~~~~~
+    // Copy Encryption Output
     encryptionCopyButton.addEventListener('click', function() {
         const outputText = encryptionOutput.value;
         if (!outputText) return;
@@ -161,7 +341,7 @@
         });
     });
 
-    // ~~~~~~~~~~~~~ Paste into Encryption Input ~~~~~~~~~~~~~
+    // Paste into Encryption Input
     encryptionPasteButton.addEventListener('click', function() {
         if (selectedEncryptionMethod === '') {
             alert('Please select an encryption method first.');
@@ -185,58 +365,72 @@
     const decryptionCopyButton = document.getElementById('decryption_copy_button');
 
     let selectedDecryptionMethod = '';
+    let decryptionKey;
 
     decryptionMethodsSelect.addEventListener('change', function() {
         selectedDecryptionMethod = this.value;
         decryptionInput.disabled = false;
         decryptionPasteButton.disabled = false;
-        updateDecryptionOutput();
+
+        // Set the key for the selected method
+        decryptionKey = decryptionKeys[selectedDecryptionMethod];
 
         // ~~~~~~~~~~~~~ Add fade-in animation ~~~~~~~~~~~~~
         decryptionExplanation.classList.remove('fade-in');
         void decryptionExplanation.offsetWidth; // Trigger reflow to restart animation
         decryptionExplanation.classList.add('fade-in');
 
+        let explanationText = '';
         switch(selectedDecryptionMethod) {
             case 'monoalphabetic_substitution':
-                decryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Monoalphabetic Substitution decryption is a process of reversing the encryption by replacing each letter in the ciphertext with the corresponding letter from the original alphabet used in encryption.</p>
-                    <div class="key-display">Key = 3</div>
+                    ${getKeyDisplayHTML('decryption', 'monoalphabetic_substitution')}
                 `;
                 break;
             case 'playfair':
-                decryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Playfair cipher decryption is the reverse of the Playfair encryption process. It involves using the same 5x5 grid created with the keyword to decrypt the ciphertext pairs back into plaintext.</p>
-                    <div class="key-display">Key = SWE</div>
+                    ${getKeyDisplayHTML('decryption', 'playfair')}
                 `;
                 break;
             case 'vigenere':
-                decryptionExplanation.innerHTML = `
+                explanationText = `
                     <p>The Vigenère cipher decryption is the reverse process of the Vigenère encryption. It uses the same keyword to revert the ciphertext back to the original plaintext by reversing the shifting process.</p>
-                    <div class="key-display">Key = KSU</div>
+                    ${getKeyDisplayHTML('decryption', 'vigenere')}
                 `;
                 break;
             case 'keyed':
-                decryptionExplanation.innerHTML = `
-                <p>The Keyed Caesar cipher decrypts by reversing the shifts applied during encryption, based on the same keyword. This method ensures that the correct keyword is needed to restore the original message, enhancing the security compared to simple fixed-shift ciphers.</p>
-                <div class="key-display">Key = 13254</div>
-            `;
+                explanationText = `
+                    <p>The Keyed Caesar cipher decrypts by reversing the shifts applied during encryption, based on the same keyword. This method ensures that the correct keyword is needed to restore the original message, enhancing the security compared to simple fixed-shift ciphers.</p>
+                    ${getKeyDisplayHTML('decryption', 'keyed')}
+                `;
                 break;
             case 'monoalphabetic_playfair':
-                decryptionExplanation.innerHTML = `
-                <p>This method decrypts using the reverse process of the Monoalphabetic Substitution and Playfair cipher. By first applying the Playfair decryption followed by Monoalphabetic substitution, the original message is restored, requiring both keys for successful decryption.</p>
-                <div class="key-display">Monoalphabetic Key = 3<br></br>Playfair Key = SWE</div>
-            `;
+                explanationText = `
+                    <p>This method decrypts using the reverse process of the Monoalphabetic Substitution and Playfair cipher. By first applying the Playfair decryption followed by Monoalphabetic substitution, the original message is restored, requiring both keys for successful decryption.</p>
+                    ${getKeyDisplayHTML('decryption', 'monoalphabetic_playfair')}
+                `;
                 break;
             case 'des':
-                decryptionExplanation.innerHTML = `
-                <p>DES (Data Encryption Standard) decrypts data by reversing the encryption process using the same 56-bit key. It operates on 64-bit blocks, restoring the original data when the correct key and initialization vector (IV) are provided.</p>
-                 <div class="key-display">Key = Security<br></br>IV = 12345678</div>
-            `;
+                explanationText = `
+                    <p>DES (Data Encryption Standard) decrypts data by reversing the encryption process using the same 56-bit key. It operates on 64-bit blocks, restoring the original data when the correct key and initialization vector (IV) are provided.</p>
+                    ${getKeyDisplayHTML('decryption', 'des')}
+                `;
                 break;
             default:
-                decryptionExplanation.innerHTML = '<p>Please choose a decryption method.</p>';
+                explanationText = '<p>Please choose a decryption method.</p>';
         }
+        decryptionExplanation.innerHTML = explanationText;
+
+        // Add event listener for Change Key button
+        if (document.getElementById('decryption_change_key_button')) {
+            document.getElementById('decryption_change_key_button').addEventListener('click', function() {
+                handleChangeKey('decryption', selectedDecryptionMethod);
+            });
+        }
+
+        updateDecryptionOutput();
     });
 
     decryptionInput.addEventListener('input', updateDecryptionOutput);
@@ -244,47 +438,47 @@
     function updateDecryptionOutput() {
         const inputText = decryptionInput.value;
         let outputText = '';
-        let key;
         const errorMessage = document.getElementById('decryption_error_message');
 
-        if (containsNonEnglishCharacters(inputText)&& selectedDecryptionMethod!="des") {
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = 'Please use English letters only.';
+        if (containsNonEnglishCharacters(inputText) && selectedDecryptionMethod != "des") {
+            showErrorMessage('decryption_error_message', 'Please use English letters only.');
             decryptionOutput.value = '';
             decryptionCopyButton.disabled = true;
             return;
         } else {
-            errorMessage.style.display = 'none';
+            clearErrorMessage('decryption_error_message');
         }
 
         if (inputText.trim() === '') {
             outputText = '';
         } else {
-            switch(selectedDecryptionMethod) {
-                case 'monoalphabetic_substitution':
-                    key=3;
-                    outputText = monoAlphabeticalDecryption(inputText,key);
-                    break;
-                case 'playfair':
-                    key="SWE";
-                    outputText =playfairDecrypt(inputText,key);
-                    break;
-                case 'vigenere':
-                    key="KSU";
-                    outputText = decryptVigenere(inputText,key);
-                    break;
-                case 'keyed':
-                    key= 13254;
-                    outputText = keyedTranspositionDecryption(inputText,key);
-                    break;
-                case 'monoalphabetic_playfair':
-                    outputText = monoAlphabeticalDecryption(playfairDecrypt(inputText,"SWE"),3);                    break;   
-                case 'des':
-                    key = "Security";
-                    outputText = desDecrypt(inputText, key);
-                    break;       
-                default:
-                    outputText = '';
+            let key = decryptionKeys[selectedDecryptionMethod];
+            try {
+                switch(selectedDecryptionMethod) {
+                    case 'monoalphabetic_substitution':
+                        outputText = monoAlphabeticalDecryption(inputText, parseInt(key));
+                        break;
+                    case 'playfair':
+                        outputText = playfairDecrypt(inputText, key);
+                        break;
+                    case 'vigenere':
+                        outputText = decryptVigenere(inputText, key);
+                        break;
+                    case 'keyed':
+                        outputText = keyedTranspositionDecryption(inputText, key);
+                        break;
+                    case 'monoalphabetic_playfair':
+                        outputText = monoAlphabeticalDecryption(playfairDecrypt(inputText, key['playfair']), parseInt(key['monoalphabetic']));
+                        break;
+                    case 'des':
+                        outputText = desDecrypt(inputText, key['key'], key['iv']);
+                        break;
+                    default:
+                        outputText = '';
+                }
+            } catch (e) {
+                showErrorMessage('decryption_error_message', 'Decryption failed: ' + e.message);
+                outputText = '';
             }
         }
 
@@ -292,7 +486,7 @@
         decryptionCopyButton.disabled = outputText.trim() === '';
     }
 
-    // ~~~~~~~~~~~~~ Copy Decryption Output ~~~~~~~~~~~~~
+    // Copy Decryption Output
     decryptionCopyButton.addEventListener('click', function() {
         const outputText = decryptionOutput.value;
         if (!outputText) return;
@@ -303,7 +497,7 @@
         });
     });
 
-    // ~~~~~~~~~~~~~ Paste into Decryption Input ~~~~~~~~~~~~~
+    // Paste into Decryption Input
     decryptionPasteButton.addEventListener('click', function() {
         if (selectedDecryptionMethod === '') {
             alert('Please select a decryption method first.');
@@ -327,18 +521,29 @@
         }, 2000);
     }
 
+    // ~~~~~~~~~~~~~ Functions to show and clear error messages ~~~~~~~~~~~~~
+    function showErrorMessage(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.style.display = 'block';
+        errorElement.textContent = message;
+    }
+
+    function clearErrorMessage(elementId) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.style.display = 'none';
+        errorElement.textContent = '';
+    }
+
     // ~~~~~~~~~~~~~ Function to check for non-English characters ~~~~~~~~~~~~~
     function containsNonEnglishCharacters(text) {
         // Matches any character that is not a-z or A-Z or common punctuation and space
         return /[^a-zA-Z\s.,!?;:'"-]/.test(text);
     }
 
-    //---------------> Encryption / decryption  methods<------------------------
+    //---------------> Encryption / Decryption Methods<------------------------
 
-    // -------------------------------------->keyedTranspositionCipher encryption<---------------------------------
-    //--------------------------------------->key = 13254<---------------------------------------------
-
-     function keyedTranspositionEncryption(plainText, key) {
+    // --------------------------------------> Keyed Transposition Cipher Encryption <---------------------------------
+    function keyedTranspositionEncryption(plainText, key) {
         const keyLength = key.toString().length;
         plainText = plainText.toUpperCase().replace(/\s+/g,"");
 
@@ -355,8 +560,6 @@
 
         // Convert key into an array of 0-based indices
         const keyList = key.toString().split('').map(digit => parseInt(digit) - 1);
-        // console.log(keyList);
-        
         const cipherList = [];
 
         // Rearrange each chunk according to the key
@@ -372,46 +575,40 @@
         const cipherText = cipherList.join(" ");
         return cipherText;
     }
-// -------------------------------------->keyedTranspositionCipher decryption<---------------------------------
-//--------------------------------------->key = 13254<---------------------------------------------
 
-function keyedTranspositionDecryption(cipherText, key) {
-    const keyLength = key.toString().length;
-    while (cipherText.length%keyLength){
-        cipherText+="X";
-    }
-    const cipherChunks = cipherText.split(" ");
+    // --------------------------------------> Keyed Transposition Cipher Decryption <---------------------------------
+    function keyedTranspositionDecryption(cipherText, key) {
+        const keyLength = key.toString().length;
+        const cipherChunks = cipherText.split(" ");
 
-    // Convert key into an array of 0-based indices
-    const keyList = key.toString().split('').map(digit => parseInt(digit) - 1);
-    
-    // Create an inverse key array to map the cipher text back to its original order
-    const inverseKeyList = [];
-    for (let i = 0; i < keyLength; i++) {
-        inverseKeyList[keyList[i]] = i;
-    }
+        // Convert key into an array of 0-based indices
+        const keyList = key.toString().split('').map(digit => parseInt(digit) - 1);
 
-    const plainList = [];
-
-    // Rearrange each chunk back to its original order according to the inverse key
-    for (const chunk of cipherChunks) {
-        let originalChunk = '';
+        // Create an inverse key array to map the cipher text back to its original order
+        const inverseKeyList = [];
         for (let i = 0; i < keyLength; i++) {
-            originalChunk += chunk[inverseKeyList[i]];
+            inverseKeyList[keyList[i]] = i;
         }
-        plainList.push(originalChunk);
+
+        const plainList = [];
+
+        // Rearrange each chunk back to its original order according to the inverse key
+        for (const chunk of cipherChunks) {
+            let originalChunk = '';
+            for (let i = 0; i < keyLength; i++) {
+                originalChunk += chunk[inverseKeyList[i]];
+            }
+            plainList.push(originalChunk);
+        }
+
+        // Combine all chunks to form the final plain text and remove trailing padding 'X'
+        const plainText = plainList.join("").replace(/X+$/, '');
+
+        return plainText;
     }
 
-    // Combine all chunks to form the final plain text and remove trailing padding 'X'
-    const plainText = plainList.join("").replace(/X+$/, '');
-
-    return plainText;
-}
-
-    //------------------------------------------> monoAlphabetical Encryption <--------------------------------------
-    //------------------------------------------>key = 3<--------------------------------------
-
-     function monoAlphabeticalEncryption(plainText, key) {
+    // --------------------------------------> Monoalphabetic Substitution Encryption <---------------------------------
+    function monoAlphabeticalEncryption(plainText, key) {
         const letters = [];
         for (let i = 65; i <= 90; i++) {
             letters.push(String.fromCharCode(i));  // Generates a list of characters from 'A' to 'Z'
@@ -420,43 +617,47 @@ function keyedTranspositionDecryption(cipherText, key) {
         let cipherText = "";
 
         for (let i = 0; i < plainText.length; i++) {
-            for (let j = 0; j < letters.length; j++) {
-                if (plainText[i].toUpperCase() === letters[j]) {
-                    let cipherIndex = (j + key) % 26;
-                    let character = letters[cipherIndex];
-                    cipherText += character;
-                }
+            const char = plainText[i];
+            const upperChar = char.toUpperCase();
+            const index = letters.indexOf(upperChar);
+            if (index !== -1) {
+                let cipherIndex = (index + key) % 26;
+                let character = letters[cipherIndex];
+                cipherText += character;
+            } else {
+                cipherText += char;
             }
         }
 
         return cipherText;
     }
 
-    //------------------------------------------> monoAlphabetical Decryption <--------------------------------------
-    //------------------------------------------>key = 3<--------------------------------------
-    function monoAlphabeticalDecryption(plainText, key) {
+    // --------------------------------------> Monoalphabetic Substitution Decryption <---------------------------------
+    function monoAlphabeticalDecryption(cipherText, key) {
         const letters = [];
         for (let i = 65; i <= 90; i++) {
             letters.push(String.fromCharCode(i));  // Generates a list of characters from 'A' to 'Z'
         }
 
-        let cipherText = "";
+        let plainText = "";
 
-        for (let i = 0; i < plainText.length; i++) {
-            for (let j = 0; j < letters.length; j++) {
-                if (plainText[i].toUpperCase() === letters[j]) {
-                    let cipherIndex = (j - key + 26) % 26; // Ensure positive index
-                    let character = letters[cipherIndex];
-                    cipherText += character;
-                }
+        for (let i = 0; i < cipherText.length; i++) {
+            const char = cipherText[i];
+            const upperChar = char.toUpperCase();
+            const index = letters.indexOf(upperChar);
+            if (index !== -1) {
+                let plainIndex = (index - key + 26) % 26; // Ensure positive index
+                let character = letters[plainIndex];
+                plainText += character;
+            } else {
+                plainText += char;
             }
         }
 
-        return cipherText;
+        return plainText;
     }
 
-    //------------------------->Playfair enc/dec<-----------------------------
-    //------------------------------->key = SWE<------------------
+    // --------------------------------------> Playfair Encryption and Decryption <---------------------------------
     function generatePlayfairMatrix(key) {
         key = key.toUpperCase().replace(/J/g, "I");  // J is typically replaced by I in Playfair cipher
         const matrix = [];
@@ -492,10 +693,9 @@ function keyedTranspositionDecryption(cipherText, key) {
         return null;
     }
 
-    //------------------------>playfair Encryption<------------------------------
     function playfairEncrypt(plainText, key) {
         const matrix = generatePlayfairMatrix(key);
-        plainText = plainText.toUpperCase().replace(/J/g, "I").replace(" ","");
+        plainText = plainText.toUpperCase().replace(/J/g, "I").replace(/\s+/g, '');
         const plainList = [];
 
         // Split into digraphs and add padding if necessary
@@ -538,7 +738,6 @@ function keyedTranspositionDecryption(cipherText, key) {
         return cipherText.join('');
     }
 
-    //------------------------>playfair Decryption<------------------------------
     function playfairDecrypt(cipherText, key) {
         const matrix = generatePlayfairMatrix(key);
         cipherText = cipherText.toUpperCase();
@@ -570,35 +769,25 @@ function keyedTranspositionDecryption(cipherText, key) {
                 plainText.push(matrix[row2][col1]);
             }
         }
+
         let decryptedText = plainText.join('');
-        
-        const vowels = "AEIOU";// because we don't want to remove X if it has a meaning
-        let Result="";//to store the decrypted text after modyfiying
-for (let i = 0; i < decryptedText.length; i++) {
-    if (decryptedText[i] === "X" && !vowels.includes(decryptedText[i - 1])) {
-        continue;
-    }
-    Result+=decryptedText[i];//we want to skip any non meaningful "X"
-}
-        decryptedText=Result;
-        return decryptedText
 
+        // Remove padding 'X' where appropriate
+        return decryptedText;
     }
 
-    //-------------------------------> Vigenère Encryption <----------------------
-    //------------------------------->key = "KEY" <------------------
-
-    // Function to encrypt using Vigenère Cipher
+    // --------------------------------------> Vigenère Cipher Encryption and Decryption <---------------------------------
     function encryptVigenere(plainText, key) {
         let cipherText = '';
         let keyIndex = 0;
+        key = key.toUpperCase().replace(/\s+/g, '');
 
         for (let i = 0; i < plainText.length; i++) {
             let char = plainText[i];
             if (isAlpha(char)) {
                 let isLowerCase = char === char.toLowerCase();
                 let charCode = char.toUpperCase().charCodeAt(0);
-                let keyChar = key[keyIndex % key.length].toUpperCase();
+                let keyChar = key[keyIndex % key.length];
                 let keyCode = keyChar.charCodeAt(0);
 
                 // Encryption formula
@@ -611,23 +800,21 @@ for (let i = 0; i < decryptedText.length; i++) {
                 cipherText += char; // Non-alphabet characters are not encrypted
             }
         }
+
         return cipherText;
     }
 
-    //-------------------------------> Vigenère Decryption <----------------------
-    //------------------------------->key = "KEY" <------------------
-
-    // Function to decrypt using Vigenère Cipher
     function decryptVigenere(cipherText, key) {
         let plainText = '';
         let keyIndex = 0;
+        key = key.toUpperCase().replace(/\s+/g, '');
 
         for (let i = 0; i < cipherText.length; i++) {
             let char = cipherText[i];
             if (isAlpha(char)) {
                 let isLowerCase = char === char.toLowerCase();
                 let charCode = char.toUpperCase().charCodeAt(0);
-                let keyChar = key[keyIndex % key.length].toUpperCase();
+                let keyChar = key[keyIndex % key.length];
                 let keyCode = keyChar.charCodeAt(0);
 
                 // Decryption formula
@@ -640,25 +827,24 @@ for (let i = 0; i < decryptedText.length; i++) {
                 plainText += char; // Non-alphabet characters are not decrypted
             }
         }
+
         return plainText;
     }
 
-    // Helper function to check if a character is an alphabet letter
     function isAlpha(char) {
         return /^[A-Za-z]$/.test(char);
     }
 
-    //------------------------------->DES Encryption<----------------------
-
-    // DES Encryption in JavaScript with CBC Mode and PKCS#5 Padding
-
-    function desEncrypt(plaintext, key) {
-        // Fixed IV
-        let iv = "12345678";  // 8 ASCII characters
-
+    // --------------------------------------> DES Encryption and Decryption <---------------------------------
+    function desEncrypt(plaintext, key, iv) {
         // Ensure key is 8 characters long
         if (key.length !== 8) {
             throw new Error("Key must be 8 characters long for DES.");
+        }
+
+        // Ensure IV is 8 characters long
+        if (iv.length !== 8) {
+            throw new Error("IV must be 8 characters long for DES.");
         }
 
         // Convert plaintext to bytes
@@ -700,26 +886,68 @@ for (let i = 0; i < decryptedText.length; i++) {
         return ciphertext.toLowerCase();
     }
 
-    // Convert ASCII string to byte array
+    // DES Decryption
+    function desDecrypt(ciphertext, key, iv) {
+        if (key.length !== 8) {
+            throw new Error("Key must be 8 characters long for DES.");
+        }
+
+        if (iv.length !== 8) {
+            throw new Error("IV must be 8 characters long for DES.");
+        }
+
+        // Convert key and IV to binary
+        let keyBin = bytesToBin(asciiToBytes(key));
+        let ivBin = bytesToBin(asciiToBytes(iv));
+
+        let previousCipherBlock = ivBin;
+        let plaintext = [];
+
+        // Split ciphertext into blocks of 16 hex characters (64 bits)
+        let blocks = [];
+        for (let i = 0; i < ciphertext.length; i += 16) {
+            blocks.push(ciphertext.substr(i, 16));
+        }
+
+        // Decrypt each block
+        for (let blockHex of blocks) {
+            // Convert hex block to binary string
+            let blockBin = hexToBin(blockHex);
+
+            // Decrypt block using DES with reversed subkeys
+            let plainBlockBin = desDecryptBlock(blockBin, keyBin);
+
+            // XOR with previous cipher block (CBC mode)
+            let decryptedBlock = xor(plainBlockBin, previousCipherBlock);
+
+            // Update previous cipher block
+            previousCipherBlock = blockBin;
+
+            // Append decrypted block to plaintext
+            plaintext.push(...binToBytes(decryptedBlock));
+        }
+
+        // Remove PKCS#5 padding
+        return bytesToAscii(pkcs5Unpad(plaintext));
+    }
+
+    // Helper functions for DES
     function asciiToBytes(str) {
         return str.split('').map(char => char.charCodeAt(0));
     }
 
-    // PKCS#5 Padding
     function pkcs5Pad(bytes) {
         let padLen = 8 - (bytes.length % 8);
         if (padLen === 0) padLen = 8;
         return bytes.concat(Array(padLen).fill(padLen));
     }
 
-    // Convert byte array to binary string
     function bytesToBin(bytes) {
         return bytes
             .map(byte => byte.toString(2).padStart(8, '0'))
             .join('');
     }
 
-    // Convert binary string to hexadecimal string
     function binToHex(binStr) {
         let hex = '';
         for (let i = 0; i < binStr.length; i += 4) {
@@ -729,7 +957,6 @@ for (let i = 0; i < decryptedText.length; i++) {
         return hex;
     }
 
-    // XOR two binary strings
     function xor(a, b) {
         let result = '';
         for (let i = 0; i < a.length; i++) {
@@ -738,7 +965,6 @@ for (let i = 0; i < decryptedText.length; i++) {
         return result;
     }
 
-    // DES block encryption
     function desEncryptBlock(blockBin, keyBin) {
         // Initial permutation
         let permutedText = permute(blockBin, initialPermutationTable);
@@ -770,7 +996,6 @@ for (let i = 0; i < decryptedText.length; i++) {
         return cipherBin;
     }
 
-    // Permutation function
     function permute(input, table) {
         let output = '';
         for (let i = 0; i < table.length; i++) {
@@ -779,7 +1004,6 @@ for (let i = 0; i < decryptedText.length; i++) {
         return output;
     }
 
-    // Generate 16 subkeys
     function generateSubKeys(key) {
         // Initial key permutation
         let permutedKey = permute(key, pc1);
@@ -800,12 +1024,10 @@ for (let i = 0; i < decryptedText.length; i++) {
         return subKeys;
     }
 
-    // Left shift function
     function leftShift(keyHalf, shifts) {
         return keyHalf.slice(shifts) + keyHalf.slice(0, shifts);
     }
 
-    // S-Box substitution
     function sBoxSubstitution(input) {
         let output = '';
         for (let i = 0; i < 8; i++) {
@@ -818,19 +1040,84 @@ for (let i = 0; i < decryptedText.length; i++) {
         return output;
     }
 
-    // Initial Permutation Table
+    function desDecryptBlock(blockBin, keyBin) {
+        // Initial permutation
+        let permutedText = permute(blockBin, initialPermutationTable);
+
+        // Generate 16 subkeys and reverse them
+        let subKeys = generateSubKeys(keyBin).reverse();
+
+        // Split text into left and right halves
+        let left = permutedText.substring(0, 32);
+        let right = permutedText.substring(32, 64);
+
+        // 16 rounds of DES decryption
+        for (let i = 0; i < 16; i++) {
+            let expandedRight = permute(right, expansionTable);
+            let xored = xor(expandedRight, subKeys[i]);
+            let substituted = sBoxSubstitution(xored);
+            let permuted = permute(substituted, permutationTable);
+            let temp = xor(left, permuted);
+            left = right;
+            right = temp;
+        }
+
+        // Combine left and right halves
+        let combined = right + left;
+
+        // Final permutation
+        let plainBin = permute(combined, finalPermutationTable);
+
+        return plainBin;
+    }
+
+    function hexToBin(hexStr) {
+        let binStr = '';
+        for (let i = 0; i < hexStr.length; i++) {
+            let binDigit = parseInt(hexStr[i], 16).toString(2).padStart(4, '0');
+            binStr += binDigit;
+        }
+        return binStr;
+    }
+
+    function pkcs5Unpad(bytes) {
+        let padLen = bytes[bytes.length - 1];
+        if (padLen < 1 || padLen > 8) {
+            throw new Error("Invalid padding");
+        }
+        // Verify that the padding bytes are correct
+        for (let i = bytes.length - padLen; i < bytes.length; i++) {
+            if (bytes[i] !== padLen) {
+                throw new Error("Invalid padding");
+            }
+        }
+        return bytes.slice(0, bytes.length - padLen);
+    }
+
+    function binToBytes(binStr) {
+        let bytes = [];
+        for (let i = 0; i < binStr.length; i += 8) {
+            bytes.push(parseInt(binStr.substr(i, 8), 2));
+        }
+        return bytes;
+    }
+
+    function bytesToAscii(bytes) {
+        return bytes.map(byte => String.fromCharCode(byte)).join('');
+    }
+
+    // DES Tables
     const initialPermutationTable = [
         58, 50, 42, 34, 26, 18, 10, 2,
         60, 52, 44, 36, 28, 20, 12, 4,
         62, 54, 46, 38, 30, 22, 14, 6,
         64, 56, 48, 40, 32, 24, 16, 8,
-        57, 49, 41, 33, 25, 17,  9, 1,
+        57, 49, 41, 33, 25, 17, 9,  1,
         59, 51, 43, 35, 27, 19, 11, 3,
         61, 53, 45, 37, 29, 21, 13, 5,
         63, 55, 47, 39, 31, 23, 15, 7
     ];
 
-    // Final Permutation Table
     const finalPermutationTable = [
         40, 8, 48, 16, 56, 24, 64, 32,
         39, 7, 47, 15, 55, 23, 63, 31,
@@ -839,117 +1126,95 @@ for (let i = 0; i < decryptedText.length; i++) {
         36, 4, 44, 12, 52, 20, 60, 28,
         35, 3, 43, 11, 51, 19, 59, 27,
         34, 2, 42, 10, 50, 18, 58, 26,
-        33, 1, 41,  9, 49, 17, 57, 25
+        33, 1, 41, 9,  49, 17, 57, 25
     ];
 
-    // Expansion Table
     const expansionTable = [
-        32,  1,  2,  3,  4,  5,
-         4,  5,  6,  7,  8,  9,
-         8,  9, 10, 11, 12, 13,
-        12, 13, 14, 15, 16, 17,
-        16, 17, 18, 19, 20, 21,
-        20, 21, 22, 23, 24, 25,
-        24, 25, 26, 27, 28, 29,
-        28, 29, 30, 31, 32,  1
+        32, 1, 2, 3, 4, 5,
+        4, 5, 6, 7, 8, 9,
+        8, 9,10,11,12,13,
+        12,13,14,15,16,17,
+        16,17,18,19,20,21,
+        20,21,22,23,24,25,
+        24,25,26,27,28,29,
+        28,29,30,31,32,1
     ];
 
-    // Permutation Table
     const permutationTable = [
-        16,  7, 20, 21,
-        29, 12, 28, 17,
-         1, 15, 23, 26,
-         5, 18, 31, 10,
-         2,  8, 24, 14,
-        32, 27,  3,  9,
-        19, 13, 30,  6,
-        22, 11,  4, 25
+        16,7,20,21,29,12,28,17,
+        1,15,23,26,5,18,31,10,
+        2,8,24,14,32,27,3,9,
+        19,13,30,6,22,11,4,25
     ];
 
-    // PC-1 Table (Key Permutation)
     const pc1 = [
-        57, 49, 41, 33, 25, 17,  9,
-         1, 58, 50, 42, 34, 26, 18,
-        10,  2, 59, 51, 43, 35, 27,
-        19, 11,  3, 60, 52, 44, 36,
-        63, 55, 47, 39, 31, 23, 15,
-         7, 62, 54, 46, 38, 30, 22,
-        14,  6, 61, 53, 45, 37, 29,
-        21, 13,  5, 28, 20, 12,  4
+        57,49,41,33,25,17,9,
+        1,58,50,42,34,26,18,
+        10,2,59,51,43,35,27,
+        19,11,3,60,52,44,36,
+        63,55,47,39,31,23,15,
+        7,62,54,46,38,30,22,
+        14,6,61,53,45,37,29,
+        21,13,5,28,20,12,4
     ];
 
-    // PC-2 Table (Key Compression)
     const pc2 = [
-        14, 17, 11, 24,  1,  5,
-         3, 28, 15,  6, 21, 10,
-        23, 19, 12,  4, 26,  8,
-        16,  7, 27, 20, 13,  2,
-        41, 52, 31, 37, 47, 55,
-        30, 40, 51, 45, 33, 48,
-        44, 49, 39, 56, 34, 53,
-        46, 42, 50, 36, 29, 32
+        14,17,11,24,1,5,
+        3,28,15,6,21,10,
+        23,19,12,4,26,8,
+        16,7,27,20,13,2,
+        41,52,31,37,47,55,
+        30,40,51,45,33,48,
+        44,49,39,56,34,53,
+        46,42,50,36,29,32
     ];
 
-    // Shift Table
-    const shiftTable = [
-        1, 1, 2, 2,
-        2, 2, 2, 2,
-        1, 2, 2, 2,
-        2, 2, 2, 1
-    ];
+    const shiftTable = [1, 1, 2, 2, 2, 2, 2, 2,
+                        1, 2, 2, 2, 2, 2, 2, 1];
 
-    // S-Boxes
     const sBoxes = [
-        // S1
         [
             [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7],
             [0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8],
             [4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0],
             [15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13]
         ],
-        // S2
         [
             [15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10],
             [3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5],
             [0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15],
             [13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9]
         ],
-        // S3
         [
             [10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8],
             [13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1],
             [13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7],
             [1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12]
         ],
-        // S4
         [
             [7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15],
             [13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9],
             [10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4],
             [3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14]
         ],
-        // S5
         [
             [2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9],
             [14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6],
             [4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14],
             [11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3]
         ],
-        // S6
         [
             [12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11],
             [10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8],
             [9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6],
             [4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13]
         ],
-        // S7
         [
             [4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1],
             [13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6],
             [1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2],
             [6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12]
         ],
-        // S8
         [
             [13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7],
             [1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2],
@@ -957,116 +1222,5 @@ for (let i = 0; i < decryptedText.length; i++) {
             [2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11]
         ]
     ];
-    
-    
-
-        //------------------------->DES decyption<---------------------------
-        // DES Decryption in JavaScript with CBC Mode and PKCS#5 Padding
-        function desDecrypt(ciphertext, key) {
-            let iv = "12345678";  // 8 ASCII characters for IV
-
-            if (key.length !== 8) {
-                throw new Error("Key must be 8 characters long for DES.");
-            }
-
-            // Convert key and IV to binary
-            let keyBin = bytesToBin(asciiToBytes(key));
-            let ivBin = bytesToBin(asciiToBytes(iv));
-
-            let previousCipherBlock = ivBin;
-            let plaintext = [];
-
-            // Split ciphertext into blocks of 16 hex characters (64 bits)
-            let blocks = [];
-            for (let i = 0; i < ciphertext.length; i += 16) {
-                blocks.push(ciphertext.substr(i, 16));
-            }
-
-            // Decrypt each block
-            for (let blockHex of blocks) {
-                // Convert hex block to binary string
-                let blockBin = hexToBin(blockHex);
-
-                // Decrypt block using DES with reversed subkeys
-                let plainBlockBin = desDecryptBlock(blockBin, keyBin);
-
-                // XOR with previous cipher block (CBC mode)
-                let decryptedBlock = xor(plainBlockBin, previousCipherBlock);
-
-                // Update previous cipher block
-                previousCipherBlock = blockBin;
-
-                // Append decrypted block to plaintext
-                plaintext.push(...binToBytes(decryptedBlock));
-            }
-
-            // Remove PKCS#5 padding
-            return bytesToAscii(pkcs5Unpad(plaintext));
-        }
-
-        // Convert hexadecimal string to binary string
-        function hexToBin(hexStr) {
-            let binStr = '';
-            for (let i = 0; i < hexStr.length; i++) {
-                let binDigit = parseInt(hexStr[i], 16).toString(2).padStart(4, '0');
-                binStr += binDigit;
-            }
-            return binStr;
-        }
-
-        // PKCS#5 Unpadding
-        function pkcs5Unpad(bytes) {
-            let padLen = bytes[bytes.length - 1];
-            return bytes.slice(0, bytes.length - padLen);
-        }
-
-// Convert binary string to byte array
-function binToBytes(binStr) {
-    let bytes = [];
-    for (let i = 0; i < binStr.length; i += 8) {
-        bytes.push(parseInt(binStr.substr(i, 8), 2));
-    }
-    return bytes;
-}
-
-// Convert byte array to ASCII string
-function bytesToAscii(bytes) {
-    return bytes.map(byte => String.fromCharCode(byte)).join('');
-
-
-}
-// DES block decryption (reversed encryption)
-function desDecryptBlock(blockBin, keyBin) {
-    // Initial permutation
-    let permutedText = permute(blockBin, initialPermutationTable);
-
-    // Generate 16 subkeys and reverse them
-    let subKeys = generateSubKeys(keyBin).reverse();
-
-    // Split text into left and right halves
-    let left = permutedText.substring(0, 32);
-    let right = permutedText.substring(32, 64);
-
-    // 16 rounds of DES decryption
-    for (let i = 0; i < 16; i++) {
-        let expandedRight = permute(right, expansionTable);
-        let xored = xor(expandedRight, subKeys[i]);
-        let substituted = sBoxSubstitution(xored);
-        let permuted = permute(substituted, permutationTable);
-        let temp = xor(left, permuted);
-        left = right;
-        right = temp;
-    }
-
-    // Combine left and right halves
-    let combined = right + left;
-
-    // Final permutation
-    let plainBin = permute(combined, finalPermutationTable);
-
-    return plainBin;
-}
-
 
 })();
-
